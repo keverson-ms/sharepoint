@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "47577339-b898-4e44-8325-35ac270e8dc2",
+  "alias": "CarouselSplideWebPart",
+  "componentType": "WebPart",
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2,
+  // If true, the component can only be installed on sites where Custom Script is allowed.
+  // Components that allow authors to embed arbitrary script code should set this to true.
+  // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "Carousel Splide"
+      },
+      "description": {
+        "default": "Splide é um slider/carrossel leve, flexível e acessível escrito em TypeScript. Sem dependências, sem erros Lighthouse."
+      },
+      "iconImageUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAx5JREFUWIXtlk9oVFcUxn/nvjcJlRaiVaS0VqmpSpvkvThFWxGJC1Hrwk0rKriwWnAhiAtxZSnUP7QUSruoLlraVUtps1FQEKFgghhK2klEEFQQ0Y1SERFt8u55x8XMmMk4k8ybDHXjB4/37vnzfd9993K58ALPGTJdQS/JB4Z8AizKyH3Dkf74N20XmzYQoXsF+w5IQK4U3w0hB7as+Ja9BYLvG+ybQBe2IMb7GD+Qx+Zm7c9jc2P8YIxPerA36tVJVdNixe8EmQcsAfogXVGg7a/MMwAixlcIbgj4E7gq2B1H+PMwcv0ZA13YghAdBToqSRKCVy8j9wCWM/5+ituVwslRwlPTGejGZgfovarw/ZSgexS5BeDK0YB0M9Bh2IYCoQh2uJowxfUDux30Z1kWwQ4XCMWwDUCHK2oxyQClmTvCS/WIDHtQ+nwcwnijBibEitwGs8uxMAuBEG6EdAvo2SHCB9X5iLF3IVhpcHcOwZl/G+DMZKCA3AC+ejZj0os/ZsgBwAlwn3TY4ba31EBtmIvRE4Z8WhXPC3q6ZQY6sfZX0K8NWy/IQBvB/iF4GKM/ADvrtC1uiYFOrP1ltN9gEwgGb4+hPTHcBjZPSzATA7OgLYf+BGyqSr1XemaEpwYEFMBVmUrQX4C1MxUqc2uF1iQDhl0SQNHjEXoebFUp1QJxWRWhBxVdU1IbeZqZKDKJ0G8F9gC5mYvWRGLY8RFy+2oYKKITa38JZjn8fkEOtULVsC9Swm8ew6NryFhlru59ICJZLchAS/Sx1QVyF2olXa0gwAi5QZDPqdgwTUAN+ayeODRwJevC5gf4dxwEWZRTUCO8PIrcmapu2nOgHf6D8PowcjOLgW7sLRq4wtVdAoA89pqSDip6NIt4kViPBPiLvdjCpgzksTe1eB50Wen3xyR9vfiN5ZqYZF1Msm5i7D+MSfoABBzIEkMHe7ClmQ0ouhbonByVjw12VIy3CbK1PCrm5KMqqtcDdHk9nSkRoQdjfBrhf83aG+N/i/FpjO6bqm7KTThC8GWEvwvSzMl4TuD3fwj+aKL3Bf4/PAGb7QHokTHqLAAAAABJRU5ErkJggg==",
+      "properties": {
+        "description": "Carousel Splide"
+      }
+    }
+  ]
+}

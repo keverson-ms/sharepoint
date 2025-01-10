@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "carousel-splide-client-side-solution",
+    "id": "6ece7d00-2cb7-47bf-a1f9-f4e86de15e28",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Carousel Splide description"
+      },
+      "longDescription": {
+        "default": "Carousel Splide description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "carousel-splide Feature",
+        "description": "The feature that activates elements of the carousel-splide solution.",
+        "id": "41136632-a408-427b-b4f2-d21b3558411a",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/carousel-splide.sppkg"
+  }
+}

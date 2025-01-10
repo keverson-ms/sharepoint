@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.5",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "carousel-splide",
+    "libraryId": "6ece7d00-2cb7-47bf-a1f9-f4e86de15e28",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "Carousel Splide",
+    "solutionShortDescription": "Carousel Splide description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
