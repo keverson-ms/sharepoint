@@ -139,7 +139,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   cancelBtnLabel: "Cancelar",
                   saveAndAddBtnLabel: "Salvar e adicionar",
                   label: "Itens a serem exibidos",
-                  panelHeader: "Painel de gerenciamento de informações",
+                  panelHeader: "Painel de Gerenciamento de Informações",
                   manageBtnLabel: "Gerenciar dados",
                   value: this.properties.items,
                   fields: [
@@ -162,26 +162,33 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                               buttonLabel: "Selecione uma Imagem",
                               onSave: async (filePickerResult: IFilePickerResult[]) => {
                                 let fileUrl = filePickerResult[0].fileAbsoluteUrl;
+
                                 if (!fileUrl && filePickerResult[0].fileName) {
                                   try {
+                                    const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('/SiteAssets')/Files/add(url='${filePickerResult[0].fileName}', overwrite=true)`;
+
                                     const uploadedFile = await this.context.spHttpClient.post(
-                                      `${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('Ativos do Site')/RootFolder/Files/Add(url='${filePickerResult[0].fileName}', overwrite=true)`,
+                                      uploadUrl,
                                       SPHttpClient.configurations.v1,
                                       {
                                         body: filePickerResult[0].fileName
                                       }
                                     );
-                                    console.log('Keverson', this.context.pageContext.web.absoluteUrl, this.context.pageContext.web);
+
                                     const jsonResponse = await uploadedFile.json();
-                                    fileUrl = jsonResponse.ServerRelativeUrl
-                                      ? `${this.context.pageContext.web.absoluteUrl}${jsonResponse.ServerRelativeUrl}`
-                                      : "";
+
+                                    console.log('uploadedFile: ' + jsonResponse, 'fileName' + filePickerResult[0].fileName, 'URL Absoluto: ' + this.context.pageContext.web.absoluteUrl);
+
+                                    // Monta a URL do arquivo carregado
+                                    // fileUrl = `${this.context.pageContext.web.absoluteUrl}${jsonResponse.ServerRelativeUrl}`;
                                   } catch (error) {
-                                    throw new Error("Erro ao carregar o arquivo.");
+                                    console.error("Erro ao enviar o arquivo:", error);
+                                    onError(itemId, "Erro ao carregar a imagem. Tente novamente.");
+                                    return;
                                   }
                                 }
 
-                                onUpdate(field.id, fileUrl);
+                                onUpdate(field.id, filePickerResult[0].previewDataUrl);
                                 return Event;
                               },
                               accepts: [".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"]
