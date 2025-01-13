@@ -5,6 +5,7 @@
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
@@ -29,6 +30,31 @@
       text-decoration: underline;
       color: "[theme:linkHovered, default: #014446]";
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}
+
+.carouselSplide {
+  .splide {
+    margin: auto;
+    max-width: 800px;
+
+    .splide__slide {
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .splide__pagination {
+      counter-reset: pagination-num;
+    }
+
+    .splide__pagination__page {
+      &:before {
+        counter-increment: pagination-num;
+        content: counter(pagination-num);
+      }
     }
   }
 }

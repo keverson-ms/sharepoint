@@ -46,6 +46,13 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
+        title: this.properties.title,
+        perPage: this.properties.perPage,
+        autoplay: this.properties.autoplay,
+        rewind: this.properties.rewind,
+        type: this.properties.type,
+        direction: this.properties.direction,
+        padding: this.properties.padding,
       },
     );
 
@@ -155,7 +162,6 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                               buttonLabel: "Selecione uma Imagem",
                               onSave: async (filePickerResult: IFilePickerResult[]) => {
                                 let fileUrl = filePickerResult[0].fileAbsoluteUrl;
-                                
                                 if (!fileUrl && filePickerResult[0].fileName) {
                                   try {
                                     const uploadedFile = await this.context.spHttpClient.post(
