@@ -63,10 +63,10 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
         type: this.properties.type,
         direction: this.properties.direction,
         padding: this.properties.padding,
-        items: this.properties.items
+        items: this.properties.items ?? []
       },
     );
-    
+
     ReactDom.render(element, this.domElement);
   }
 

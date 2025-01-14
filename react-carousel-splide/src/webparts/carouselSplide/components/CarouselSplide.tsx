@@ -19,19 +19,18 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
   }
 
   public render(): React.ReactElement<ICarouselSplideProps> {
-    const { hasTeamsContext, items = [] } = this.props;
-    console.log(items);
+    const { hasTeamsContext, items } = this.props;
     return (
       <section className={`${styles.carouselSplide} ${hasTeamsContext ? styles.teams : ''} splide`}>
         <div className="splide__track">
           <ul className="splide__list">
-            {items.map(function (item, index) {
+            {this.props.items.map(function (item, index) {
               return (
                 <li key={index} className="splide__slide">
                   {item}
                 </li>
               );
-            })}
+            }) ?? items}
           </ul>
         </div>
       </section>
