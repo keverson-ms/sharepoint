@@ -17,7 +17,7 @@ import CarouselSplide from './components/CarouselSplide';
 import { ICarouselSplideProps } from './components/ICarouselSplideProps';
 import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
 import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react';
-import { SPHttpClient } from '@microsoft/sp-http';
+import { /* HttpClientResponse, */ SPHttpClient } from '@microsoft/sp-http';
 export interface ICarouselSplideWebPartProps {
   description: string;
   items: IFilePickerResult[];
@@ -37,6 +37,16 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
   private minPerPage: number = 1;
   private maxPerPage: number = 5;
 
+  /* private allowedImageTypes = [
+    "image/gif",
+    "image/jpeg",
+    "image/bmp",
+    "image/tiff",
+    "image/x-icon",
+    "image/png",
+    "image/svg+xml",
+  ]; */
+
   public render(): void {
     const element: React.ReactElement<ICarouselSplideProps> = React.createElement(
       CarouselSplide,
@@ -53,9 +63,10 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
         type: this.properties.type,
         direction: this.properties.direction,
         padding: this.properties.padding,
+        items: this.properties.items
       },
     );
-
+    
     ReactDom.render(element, this.domElement);
   }
 
@@ -124,6 +135,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
+    console.log(this.properties.items);
     return {
       pages: [
         {
@@ -138,16 +150,22 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   saveBtnLabel: "Salvar",
                   cancelBtnLabel: "Cancelar",
                   saveAndAddBtnLabel: "Salvar e adicionar",
-                  label: "Itens a serem exibidos",
+                  label: `Itens a serem exibidos no carousel ${this.properties.items ? `( ${this.properties.items.length} )` : ''}`,
                   panelHeader: "Painel de Gerenciamento de Informações",
                   manageBtnLabel: "Gerenciar dados",
                   value: this.properties.items,
+                  enableSorting: true,
                   fields: [
                     {
                       id: "Titulo",
                       title: "Titulo",
                       type: CustomCollectionFieldType.string,
                       required: true,
+                    },
+                    {
+                      id: "Link",
+                      title: "Link",
+                      type: CustomCollectionFieldType.url,
                     },
                     {
                       id: "Imagem",
@@ -161,40 +179,47 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                               key: itemId,
                               buttonLabel: "Selecione uma Imagem",
                               onSave: async (filePickerResult: IFilePickerResult[]) => {
-                                let fileUrl = filePickerResult[0].fileAbsoluteUrl;
+                                const fileUrl = filePickerResult[0].fileAbsoluteUrl;
 
-                                if (!fileUrl && filePickerResult[0].fileName) {
+                                if (!fileUrl && !filePickerResult[0].fileAbsoluteUrl) {
                                   try {
-                                    const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('/SiteAssets')/Files/add(url='${filePickerResult[0].fileName}', overwrite=true)`;
 
-                                    const uploadedFile = await this.context.spHttpClient.post(
+                                    const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('SiteAssets')/Files/add(url='${filePickerResult[0].fileName}', overwrite=true)`;
+
+                                    const fileContent = await filePickerResult[0].downloadFileContent();
+
+                                    await this.context.spHttpClient.post(
                                       uploadUrl,
                                       SPHttpClient.configurations.v1,
                                       {
-                                        body: filePickerResult[0].fileName
+
+                                        headers: {
+                                          'Accept': 'application/json;odata=nometadata',
+                                          'Content-Type': 'application/octet-stream',
+                                        },
+                                        body: fileContent,
                                       }
-                                    );
+                                    ).then((responseJSON) => {
+                                      console.log('File created successfully: ', responseJSON.text());
+                                    })
+                                      .catch((error) => {
+                                        console.error('Error creating file:', error);
+                                      });
 
-                                    const jsonResponse = await uploadedFile.json();
-
-                                    console.log('uploadedFile: ' + jsonResponse, 'fileName' + filePickerResult[0].fileName, 'URL Absoluto: ' + this.context.pageContext.web.absoluteUrl);
-
-                                    // Monta a URL do arquivo carregado
-                                    // fileUrl = `${this.context.pageContext.web.absoluteUrl}${jsonResponse.ServerRelativeUrl}`;
                                   } catch (error) {
-                                    console.error("Erro ao enviar o arquivo:", error);
-                                    onError(itemId, "Erro ao carregar a imagem. Tente novamente.");
+                                    onError(itemId, "Erro ao tentar realizar o upload de imagem: " + error);
                                     return;
                                   }
                                 }
 
-                                onUpdate(field.id, filePickerResult[0].previewDataUrl);
+                                onUpdate(field.id, filePickerResult[0].fileAbsoluteUrl ?? filePickerResult[0].previewDataUrl);
+
                                 return Event;
                               },
                               accepts: [".gif", ".jpg", ".jpeg", ".bmp", ".dib", ".tif", ".tiff", ".ico", ".png", ".jxr", ".svg"]
                             }),
                             value &&
-                            React.createElement("div", /* { style: { marginTop: "10px" } } */ null,
+                            React.createElement("div", null,
                               React.createElement("a", {
                                 href: value,
                                 target: "_blank",
@@ -203,7 +228,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                                 React.createElement("img", {
                                   src: value,
                                   alt: "Pré-visualização da imagem",
-                                  style: { maxWidth: "50px", maxHeight: "100%", display: "block", margin: "0.5em" }
+                                  style: { maxWidth: "100%", maxHeight: "30px", display: "block", margin: "0.5em" }
                                 })
                               )
                             )

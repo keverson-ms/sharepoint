@@ -1,3 +1,4 @@
+import { IFilePickerResult } from '@pnp/spfx-controls-react';
 export interface ICarouselSplideProps {
   description: string;
   isDarkTheme: boolean;
@@ -11,4 +12,5 @@ export interface ICarouselSplideProps {
   type: string;
   direction: string;
   padding: number;
+  items: IFilePickerResult[]
 }
