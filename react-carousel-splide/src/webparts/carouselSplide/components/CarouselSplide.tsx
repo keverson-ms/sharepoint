@@ -30,7 +30,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
 
   public render(): React.ReactElement<ICarouselSplideProps> {
     const { hasTeamsContext, items = [] } = this.props;
-    console.log(this.props.roundedItem, styles);
+    console.log(styles, this);
     return (
       <section className={`${styles.carouselSplide} ${hasTeamsContext ? styles.teams : ''}`}>
         <h3>{this.props.title ? `${this.props.title}` : ``}</h3>
