@@ -311,21 +311,20 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   min: this.minPerPage,
                   max: this.properties.type === 'fade' ? this.minPerPage : this.maxPerPage,
                   value: this.properties.perPage,
-                  label: strings.PerPageFieldLabel,
+                  label: `${strings.PerPageFieldLabel}: (${this.properties.perPage})`,
                   disabled: this.properties.type === 'fade'
                 }),
                 PropertyPaneSlider('roundedItem', {
-                  ariaLabel: 'Keversob',
                   min: 0,
                   max: 50,
                   value: this.properties.roundedItem,
-                  label: strings.RoundedItemFieldLabel
+                  label: `${strings.RoundedItemFieldLabel} (${this.properties.roundedItem}%)`
                 }),
                 PropertyPaneSlider('padding', {
                   min: 0,
                   max: 5,
                   value: this.properties.padding,
-                  label: strings.PaddingFieldLabel
+                  label: `${strings.PaddingFieldLabel} (${this.properties.padding}%)`
                 }),
               ]
             }

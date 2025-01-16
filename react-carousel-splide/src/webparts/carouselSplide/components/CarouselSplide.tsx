@@ -61,7 +61,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
       autoplay: this.props.autoplay || true,
       rewind: this.props.rewind || true,
       direction: this.props.direction ? 'rtl' : 'ltr',
-      padding: `${this.props.padding || 0}rem`,
+      padding: `${this.props.padding || 0}%`,
       gap: '1em'
     }).mount();
   }
