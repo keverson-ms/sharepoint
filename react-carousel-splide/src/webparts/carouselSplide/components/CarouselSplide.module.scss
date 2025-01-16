@@ -1,16 +1,5 @@
 @import '~@fluentui/react/dist/sass/References.scss';
 
-.carouselSplide {
-  overflow: hidden;
-  padding: 1em;
-  color: "[theme:bodyText, default: #323130]";
-  color: var(--bodyText);
-
-  &.teams {
-    font-family: $ms-font-family-fallbacks;
-  }
-}
-
 .welcome {
   text-align: center;
 }
@@ -35,26 +24,49 @@
 }
 
 .carouselSplide {
-  .splide {
-    margin: auto;
-    max-width: 800px;
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
 
-    .splide__slide {
-      background: #f4f4f4;
-      border: 1px solid #ccc;
-      text-align: center;
-      padding: 20px;
-    }
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
 
-    .splide__pagination {
-      counter-reset: pagination-num;
-    }
+  .splide__track {
+    .splide__list {
+      .splide__slide {
 
-    .splide__pagination__page {
-      &:before {
-        counter-increment: pagination-num;
-        content: counter(pagination-num);
+        background: #f4f4f4;
+        border: 1px solid #ccc;
+        text-align: center;
+        padding: 20px;
+
+        a {
+          display: block !important;
+          color: "[theme:link, default: #323130]";
+          color: var(--link);
+
+          &:hover {
+            background-color: var(--linkHovered);
+          }
+
+          img {
+            width: 100% !important;
+          }
+        }
       }
+    }
+  }
+
+  .splide__pagination {
+    counter-reset: pagination-num;
+  }
+
+  .splide__pagination__page {
+    &:before {
+      counter-increment: pagination-num;
+      content: counter(pagination-num);
     }
   }
 }

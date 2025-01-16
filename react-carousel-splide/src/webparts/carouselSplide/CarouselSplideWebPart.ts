@@ -14,19 +14,22 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'CarouselSplideWebPartStrings';
 import CarouselSplide from './components/CarouselSplide';
-import { ICarouselSplideProps } from './components/ICarouselSplideProps';
+import { ICarouselSplideItem, ICarouselSplideProps } from './components/ICarouselSplideProps';
 import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
-import { FilePicker, IFilePickerResult } from '@pnp/spfx-controls-react';
-import { /* HttpClientResponse, */ SPHttpClient } from '@microsoft/sp-http';
+import { FilePicker } from '@pnp/spfx-controls-react';
+import { SPHttpClient } from '@microsoft/sp-http';
+
 export interface ICarouselSplideWebPartProps {
   description: string;
-  items: IFilePickerResult[];
+  items: ICarouselSplideItem[];
   title: string;
   perPage: number;
+  roundedItem: number;
   autoplay: boolean;
   rewind: boolean;
   type: string;
   direction: string;
+  pauseOnHover: string;
   padding: number;
 }
 
@@ -35,7 +38,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private minPerPage: number = 1;
-  private maxPerPage: number = 5;
+  private maxPerPage: number = 10;
 
   /* private allowedImageTypes = [
     "image/gif",
@@ -48,6 +51,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
   ]; */
 
   public render(): void {
+
     const element: React.ReactElement<ICarouselSplideProps> = React.createElement(
       CarouselSplide,
       {
@@ -56,14 +60,15 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        title: this.properties.title,
-        perPage: this.properties.perPage,
-        autoplay: this.properties.autoplay,
-        rewind: this.properties.rewind,
-        type: this.properties.type,
-        direction: this.properties.direction,
-        padding: this.properties.padding,
-        items: this.properties.items ?? []
+        title: this.properties.title ?? '',
+        perPage: this.properties.type === 'fade' ? this.minPerPage : this.properties.perPage,
+        roundedItem: this.properties.roundedItem ?? 0,
+        autoplay: this.properties.autoplay ?? false,
+        rewind: this.properties.rewind ?? false,
+        type: this.properties.type ?? 'loop',
+        direction: this.properties.direction ?? false,
+        padding: this.properties.padding ?? 0,
+        items: this.properties.items ?? [],
       },
     );
 
@@ -74,7 +79,6 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
 
     if (this.properties.type === 'fade') this.properties.perPage = this.minPerPage;
     if (!this.properties.perPage) this.properties.perPage = this.minPerPage;
-    if (!this.properties.padding) this.properties.padding = 0;
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -114,6 +118,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
     }
 
     this._isDarkTheme = !!currentTheme.isInverted;
+
     const {
       semanticColors
     } = currentTheme;
@@ -135,7 +140,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    console.log(this.properties.items);
+
     return {
       pages: [
         {
@@ -161,6 +166,10 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                       title: "Titulo",
                       type: CustomCollectionFieldType.string,
                       required: true,
+                      onGetErrorMessage: (value: string): string => {
+                        console.log('Field Titulo: ' + value);
+                        return '';
+                      },
                     },
                     {
                       id: "Link",
@@ -178,7 +187,9 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                               context: this.context,
                               key: itemId,
                               buttonLabel: "Selecione uma Imagem",
-                              onSave: async (filePickerResult: IFilePickerResult[]) => {
+                              hideLocalMultipleUploadTab: true,
+                              hideOneDriveTab: true,
+                              onSave: async (filePickerResult: ICarouselSplideItem[]) => {
                                 const fileUrl = filePickerResult[0].fileAbsoluteUrl;
 
                                 if (!fileUrl && !filePickerResult[0].fileAbsoluteUrl) {
@@ -235,9 +246,24 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                           )
                         );
                       },
-                      required: true
+                      required: true,
+                      onGetErrorMessage: (value: string): string => {
+                        console.log('Field Imagem: ' + value);
+                        return '';
+                      },
                     },
-                  ]
+                    {
+                      id: "Ativo",
+                      title: "Ativo?",
+                      type: CustomCollectionFieldType.boolean,
+                      defaultValue: true,
+                      onGetErrorMessage: (value: string): string => {
+                        console.log('Field Active: ' + value);
+                        return '';
+                      },
+                    }
+                  ],
+                  disabled: false
                 }),
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel,
@@ -265,6 +291,14 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   onAriaLabel: 'rtl',
                   offAriaLabel: 'ltr'
                 }),
+                PropertyPaneToggle('pauseOnHover', {
+                  label: strings.PauseOnHoverFieldLabel,
+                  checked: false,
+                  onText: 'Sim',
+                  offText: 'Não',
+                  onAriaLabel: 'Y',
+                  offAriaLabel: 'N'
+                }),
                 PropertyPaneCheckbox('autoplay', {
                   text: strings.AutoPlayFieldLabel,
                   checked: this.properties.autoplay
@@ -278,13 +312,20 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   max: this.properties.type === 'fade' ? this.minPerPage : this.maxPerPage,
                   value: this.properties.perPage,
                   label: strings.PerPageFieldLabel,
-                  disabled: this.properties.type === 'fade',
+                  disabled: this.properties.type === 'fade'
+                }),
+                PropertyPaneSlider('roundedItem', {
+                  ariaLabel: 'Keversob',
+                  min: 0,
+                  max: 50,
+                  value: this.properties.roundedItem,
+                  label: strings.RoundedItemFieldLabel
                 }),
                 PropertyPaneSlider('padding', {
                   min: 0,
                   max: 5,
                   value: this.properties.padding,
-                  label: strings.PaddingFieldLabel,
+                  label: strings.PaddingFieldLabel
                 }),
               ]
             }
