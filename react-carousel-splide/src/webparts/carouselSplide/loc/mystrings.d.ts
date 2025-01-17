@@ -13,6 +13,7 @@ declare interface ICarouselSplideWebPartStrings {
   PerPageFieldLabel: string;
   RoundedItemFieldLabel: string;
   PaddingFieldLabel: string;
+  SpaceBetweenItemsFieldLabel: string;
   AppLocalEnvironmentSharePoint: string;
   AppLocalEnvironmentTeams: string;
   AppLocalEnvironmentOffice: string;

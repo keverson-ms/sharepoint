@@ -21,6 +21,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
       prevProps.type !== this.props.type ||
       prevProps.direction !== this.props.direction ||
       prevProps.padding !== this.props.padding ||
+      prevProps.spaceBetweenItems !== this.props.spaceBetweenItems ||
       prevProps.items !== this.props.items
     ) {
       this.reinitializeSplide();
@@ -33,7 +34,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
 
   public render(): React.ReactElement<ICarouselSplideProps> {
     const { hasTeamsContext, items = [] } = this.props;
-    return (
+    return items.length ? (
       <section className={`${styles.carouselSplide} ${hasTeamsContext ? styles.teams : ''}`}>
         <h3>{this.props.title ? `${this.props.title}` : ``}</h3>
         <p>{this.props.description ? `${this.props.description}` : ``}</p>
@@ -52,7 +53,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
           </div>
         </div>
       </section>
-    );
+    ) : <p>Edite o elemento e adicione itens!</p>;
   }
 
   private initializeSplide(): void {
@@ -66,7 +67,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
         rewind: this.props.rewind || true,
         direction: this.props.direction ? 'rtl' : 'ltr',
         padding: `${this.props.padding || 0}%`,
-        gap: '1em',
+        gap: `${this.props.spaceBetweenItems}px`,
       }).mount();
     }
   }

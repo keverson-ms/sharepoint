@@ -31,6 +31,7 @@ export interface ICarouselSplideWebPartProps {
   direction: string;
   pauseOnHover: string;
   padding: number;
+  spaceBetweenItems: number;
 }
 
 export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarouselSplideWebPartProps> {
@@ -68,6 +69,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
         type: this.properties.type ?? 'loop',
         direction: this.properties.direction ?? false,
         padding: this.properties.padding ?? 0,
+        spaceBetweenItems: this.properties.spaceBetweenItems ?? 1,
         items: this.properties.items ?? [],
       },
     );
@@ -79,6 +81,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
 
     if (this.properties.type === 'fade') this.properties.perPage = this.minPerPage;
     if (!this.properties.perPage) this.properties.perPage = this.minPerPage;
+    if (!this.properties.spaceBetweenItems) this.properties.spaceBetweenItems = this.minPerPage;
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -318,13 +321,25 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   min: 0,
                   max: 50,
                   value: this.properties.roundedItem,
-                  label: `${strings.RoundedItemFieldLabel} (${this.properties.roundedItem}%)`
+                  label: `${strings.RoundedItemFieldLabel} (${this.properties.roundedItem ? this.properties.roundedItem : 0} %)`,
+                  showValue: true,
+                  disabled: this.properties.items.length ? false : true
                 }),
                 PropertyPaneSlider('padding', {
                   min: 0,
                   max: 5,
                   value: this.properties.padding,
-                  label: `${strings.PaddingFieldLabel} (${this.properties.padding}%)`
+                  label: `${strings.PaddingFieldLabel} (${this.properties.padding ? this.properties.padding : 0} %)`,
+                  showValue: true,
+                  disabled: this.properties.items.length ? false : true
+                }),
+                PropertyPaneSlider('spaceBetweenItems', {
+                  min: 1,
+                  max: 15,
+                  value: this.properties.spaceBetweenItems,
+                  label: `${strings.PaddingFieldLabel} (${this.properties.spaceBetweenItems ? this.properties.spaceBetweenItems : 0} px)`,
+                  showValue: true,
+                  disabled: this.properties.items.length ? false : true
                 }),
               ]
             }

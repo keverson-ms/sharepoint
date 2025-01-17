@@ -21,5 +21,6 @@ export interface ICarouselSplideProps {
   type: string;
   direction: string;
   padding: number;
+  spaceBetweenItems: number;
   items: ICarouselSplideItem[];
 }
