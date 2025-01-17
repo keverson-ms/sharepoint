@@ -6,13 +6,12 @@ import type { ICarouselSplideProps } from './ICarouselSplideProps';
 
 export default class CarouselSplide extends React.Component<ICarouselSplideProps> {
   private splideInstance: Splide | null = null;
+  private generatedUniqueId: string = crypto.randomUUID();
 
-  // Inicializa o Splide ao montar o componente
   public componentDidMount(): void {
     this.initializeSplide();
   }
 
-  // Atualiza a instância do Splide quando as propriedades mudam
   public componentDidUpdate(prevProps: ICarouselSplideProps): void {
     if (
       prevProps.perPage !== this.props.perPage ||
@@ -28,14 +27,17 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
     }
   }
 
+  public componentWillUnmount(): void {
+    this.destroySplide();
+  }
+
   public render(): React.ReactElement<ICarouselSplideProps> {
     const { hasTeamsContext, items = [] } = this.props;
-    console.log(styles, this);
     return (
       <section className={`${styles.carouselSplide} ${hasTeamsContext ? styles.teams : ''}`}>
         <h3>{this.props.title ? `${this.props.title}` : ``}</h3>
         <p>{this.props.description ? `${this.props.description}` : ``}</p>
-        <div className="splide">
+        <div id={this.generatedUniqueId} className="splide">
           <div className="splide__track">
             <ul className="splide__list">
               {items.map((item, index) => (
@@ -44,32 +46,40 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
                     <img src={item.Imagem} alt={item.Titulo} width="100%" style={{ borderRadius: `${this.props.roundedItem}%` }} />
                     <p className='root-88'>{item.Titulo}</p>
                   </a>
-                </li>) : ``
+                </li>) : null
               ))}
             </ul>
           </div>
         </div>
-      </section >
+      </section>
     );
   }
 
   private initializeSplide(): void {
+    const element = document.getElementById(this.generatedUniqueId);
 
-    this.splideInstance = new Splide('.splide', {
-      type: this.props.type || 'loop',
-      perPage: this.props.perPage || 3,
-      autoplay: this.props.autoplay || true,
-      rewind: this.props.rewind || true,
-      direction: this.props.direction ? 'rtl' : 'ltr',
-      padding: `${this.props.padding || 0}%`,
-      gap: '1em'
-    }).mount();
+    if (element) {
+      this.splideInstance = new Splide(element, {
+        type: this.props.type || 'loop',
+        perPage: this.props.perPage || 3,
+        autoplay: this.props.autoplay || true,
+        rewind: this.props.rewind || true,
+        direction: this.props.direction ? 'rtl' : 'ltr',
+        padding: `${this.props.padding || 0}%`,
+        gap: '1em',
+      }).mount();
+    }
   }
 
   private reinitializeSplide(): void {
+    this.destroySplide();
+    this.initializeSplide();
+  }
+
+  private destroySplide(): void {
     if (this.splideInstance) {
       this.splideInstance.destroy();
+      this.splideInstance = null;
     }
-    this.initializeSplide();
   }
 }
