@@ -34,7 +34,8 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
 
   public render(): React.ReactElement<ICarouselSplideProps> {
     const { hasTeamsContext, items = [] } = this.props;
-    return items.length ? (
+
+    return (
       <section className={`${styles.carouselSplide} ${hasTeamsContext ? styles.teams : ''}`}>
         <h3>{this.props.title ? `${this.props.title}` : ``}</h3>
         <p>{this.props.description ? `${this.props.description}` : ``}</p>
@@ -53,7 +54,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
           </div>
         </div>
       </section>
-    ) : <p>Edite o elemento e adicione itens!</p>;
+    );
   }
 
   private initializeSplide(): void {

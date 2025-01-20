@@ -144,6 +144,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
 
+    console.log(this.properties.items);
     return {
       pages: [
         {
@@ -322,24 +323,21 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   max: 50,
                   value: this.properties.roundedItem,
                   label: `${strings.RoundedItemFieldLabel} (${this.properties.roundedItem ? this.properties.roundedItem : 0} %)`,
-                  showValue: true,
-                  disabled: this.properties.items.length ? false : true
+                  disabled: !this.properties.items ? false : true
                 }),
                 PropertyPaneSlider('padding', {
                   min: 0,
                   max: 5,
                   value: this.properties.padding,
                   label: `${strings.PaddingFieldLabel} (${this.properties.padding ? this.properties.padding : 0} %)`,
-                  showValue: true,
-                  disabled: this.properties.items.length ? false : true
+                  disabled: !this.properties.items ? false : true
                 }),
                 PropertyPaneSlider('spaceBetweenItems', {
                   min: 1,
                   max: 15,
                   value: this.properties.spaceBetweenItems,
                   label: `${strings.PaddingFieldLabel} (${this.properties.spaceBetweenItems ? this.properties.spaceBetweenItems : 0} px)`,
-                  showValue: true,
-                  disabled: this.properties.items.length ? false : true
+                  disabled: !this.properties.items ? false : true
                 }),
               ]
             }
