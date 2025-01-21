@@ -12,7 +12,9 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
   }
 
   public componentDidUpdate(prevProps: IBirthdaysMonthProps): void {
+    console.log(prevProps.members);
     prevProps.title !== this.props.title;
+    prevProps.members !== this.props.members;
   }
   public render(): React.ReactElement<IBirthdaysMonthProps> {
     const {

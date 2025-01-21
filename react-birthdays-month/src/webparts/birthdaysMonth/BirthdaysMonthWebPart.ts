@@ -12,13 +12,14 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'BirthdaysMonthWebPartStrings';
 import BirthdaysMonth from './components/BirthdaysMonth';
-import { IBirthdaysMonthProps } from './components/IBirthdaysMonthProps';
+import { IBirthdaysMonthProps, IBirthdaysMembersItem } from './components/IBirthdaysMonthProps';
 import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 
 export interface IBirthdaysMonthWebPartProps {
   title: string;
   messageDefault: boolean;
   group: string;
+  members: IBirthdaysMembersItem[];
 }
 
 export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthdaysMonthWebPartProps> {
@@ -52,15 +53,46 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
       text: (`${group.displayName !== group.description ? group.displayName + ' - ' + group.description : group.description}`).toUpperCase()
     }));
 
-    console.log(groups);
-
     return groups;
+  }
+
+  private async _fetchGroupMembers(groupId: string = this.properties.group): Promise<IBirthdaysMembersItem[]> {
+
+    const client = await this._getAadHttpClient();
+
+    const response: HttpClientResponse = await client.get(
+      `https://graph.microsoft.com/v1.0/groups/${groupId}/members`,
+      AadHttpClient.configurations.v1,
+      {
+        headers: {
+          'ConsistencyLevel': 'eventual'
+        }
+      }
+    );
+
+
+    const data = await response.json();
+
+    const members = data.value.map((member: any) => (member ? {
+      displayName: member.displayName,
+      givenName: member.givenName,
+      id: member.id,
+      jobTitle: member.jobTitle,
+      mail: member.mail,
+      mobilePhone: member.mobilePhone,
+      officeLocation: member.officeLocation,
+      preferredLanguage: member.preferredLanguage,
+      surname: member.surname,
+      userPrincipalName: member.userPrincipalName
+    } : null));
+
+    return members;
   }
 
   private async _getAadHttpClient(): Promise<AadHttpClient> {
     return this.context.aadHttpClientFactory.getClient('https://graph.microsoft.com');
   }
-  
+
   public render(): void {
 
     const getMonth = (): string => {
@@ -76,7 +108,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        members: this.properties.members,
       }
     );
 
@@ -86,11 +119,9 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   protected async onInit(): Promise<void> {
     await super.onInit();
 
-    try {
-      this._groupOptions = await this._fetchGroups();
-    } catch (error) {
-      console.error('Erro ao buscar grupos do AD:', error);
-    }
+    this._groupOptions = await this._fetchGroups();
+    this.properties.members = await this._fetchGroupMembers(this.properties.group);
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
@@ -184,5 +215,17 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         }
       ]
     };
+  }
+
+  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): Promise<void> {
+    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+
+    // Verifica se o campo alterado foi o "group"
+    if (propertyPath === 'group' && newValue !== oldValue) {
+      this.properties.group = newValue;
+      console.log(this.properties.group, newValue);
+      // Chama a API para buscar os membros do grupo selecionado
+      this.properties.members = await this._fetchGroupMembers(newValue);
+    }
   }
 }
