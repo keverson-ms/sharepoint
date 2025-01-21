@@ -1,42 +1,72 @@
 import * as React from 'react';
 import styles from './BirthdaysMonth.module.scss';
 import type { IBirthdaysMonthProps } from './IBirthdaysMonthProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+// import { escape } from '@microsoft/sp-lodash-subset';
+import { ActivityItem, IActivityItemProps, Link, mergeStyleSets } from '@fluentui/react';
+import { TestImages } from '@fluentui/example-data';
 
 export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps> {
+
+  public componentDidMount(): void {
+    this.componentDidUpdate(this.props);
+  }
+
+  public componentDidUpdate(prevProps: IBirthdaysMonthProps): void {
+    prevProps.title !== this.props.title;
+  }
   public render(): React.ReactElement<IBirthdaysMonthProps> {
     const {
-      description,
-      isDarkTheme,
-      environmentMessage,
+      // isDarkTheme,
+      // environmentMessage,
       hasTeamsContext,
-      userDisplayName
+      // userDisplayName
     } = this.props;
+
+    const classNames = mergeStyleSets({
+      exampleRoot: {
+        marginTop: '20px',
+      },
+      nameText: {
+        fontWeight: 'bold',
+      },
+    });
+
+    const activityItemExamples: (IActivityItemProps & { key: string | number })[] = [
+      {
+        key: 1,
+        activityDescription: [
+          <Link
+            key={1}
+            className={classNames.nameText}
+            onClick={() => {
+              alert('A name was clicked.');
+            }}
+          >
+            Jack Howden
+          </Link>,
+          <span key={2}> renamed </span>,
+          <span key={3} className={classNames.nameText}>
+            DocumentTitle.docx
+          </span>,
+        ],
+        // activityPersonas: [{ imageUrl: `${escape(this.context.pageContext.site.absoluteUrl)}/_layouts/15/userphoto.aspx?size=L&accountname=${escape(this.context.pageContext.user.email)}` }],
+        activityPersonas: [{ imageUrl: TestImages.personaMale }],
+        comments: 'Hello, this is the text of my basic comment!',
+        timeStamp: '23m ago',
+      }
+    ];
 
     return (
       <section className={`${styles.birthdaysMonth} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
-        </div>
+        {this.props.title && (
+          <>
+            <h2>{this.props.title}</h2>
+            <hr />
+          </>
+        )}
+        {activityItemExamples.map((item: { key: string | number }) => (
+          <ActivityItem {...item} key={item.key} className={classNames.exampleRoot} />
+        ))}
       </section>
     );
   }

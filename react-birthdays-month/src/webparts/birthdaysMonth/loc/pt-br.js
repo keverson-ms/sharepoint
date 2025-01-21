@@ -1,8 +1,10 @@
-define([], function() {
+define([], function () {
   return {
-    "PropertyPaneDescription": "Description",
+    "PropertyPaneDescription": "Painel para administração dos aniversariantes do mês.",
     "BasicGroupName": "Group Name",
-    "DescriptionFieldLabel": "Description Field",
+    "TitleSectionFieldLabel": "Título de Seção",
+    "MessageDefaultFieldLabel": "Usar um título de seção padrão?",
+    "GroupAzureFieldLabel": "Exibir aniversariantes de qual grupo?",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppLocalEnvironmentOffice": "The app is running on your local environment in office.com",

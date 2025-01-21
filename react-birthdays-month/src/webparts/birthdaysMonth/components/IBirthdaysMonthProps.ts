@@ -1,5 +1,5 @@
 export interface IBirthdaysMonthProps {
-  description: string;
+  title: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
