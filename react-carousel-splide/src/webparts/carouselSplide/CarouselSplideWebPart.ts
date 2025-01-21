@@ -314,7 +314,7 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                 PropertyPaneSlider('perPage', {
                   min: this.minPerPage,
                   max: this.properties.type === 'fade' ? this.minPerPage : this.maxPerPage,
-                  value: this.properties.perPage,
+                  value: this.properties.type === 'fade' ? this.minPerPage : this.properties.perPage,
                   label: `${strings.PerPageFieldLabel}: (${this.properties.perPage})`,
                   disabled: this.properties.type === 'fade'
                 }),
@@ -323,21 +323,21 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   max: 50,
                   value: this.properties.roundedItem,
                   label: `${strings.RoundedItemFieldLabel} (${this.properties.roundedItem ? this.properties.roundedItem : 0} %)`,
-                  disabled: !this.properties.items ? false : true
+                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true
                 }),
                 PropertyPaneSlider('padding', {
                   min: 0,
                   max: 5,
                   value: this.properties.padding,
                   label: `${strings.PaddingFieldLabel} (${this.properties.padding ? this.properties.padding : 0} %)`,
-                  disabled: !this.properties.items ? false : true
+                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true
                 }),
                 PropertyPaneSlider('spaceBetweenItems', {
                   min: 1,
                   max: 15,
                   value: this.properties.spaceBetweenItems,
                   label: `${strings.PaddingFieldLabel} (${this.properties.spaceBetweenItems ? this.properties.spaceBetweenItems : 0} px)`,
-                  disabled: !this.properties.items ? false : true
+                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true
                 }),
               ]
             }
