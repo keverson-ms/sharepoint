@@ -5,6 +5,7 @@ export interface IBirthdaysMonthProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   members: IBirthdaysMembersItem[];
+  group: string;
   absoluteUrl: string;
 }
 
@@ -21,4 +22,9 @@ export interface IBirthdaysMembersItem {
   preferredLanguage: string;
   surname: string;
   userPrincipalName: string;
+}
+
+export interface IBirthdaysMembersGroupsItem {
+  key: string;
+  text: string
 }

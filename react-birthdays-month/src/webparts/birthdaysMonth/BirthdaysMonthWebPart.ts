@@ -12,7 +12,7 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'BirthdaysMonthWebPartStrings';
 import BirthdaysMonth from './components/BirthdaysMonth';
-import { IBirthdaysMonthProps, IBirthdaysMembersItem } from './components/IBirthdaysMonthProps';
+import { IBirthdaysMonthProps, IBirthdaysMembersItem, IBirthdaysMembersGroupsItem } from './components/IBirthdaysMonthProps';
 import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
 
 export interface IBirthdaysMonthWebPartProps {
@@ -46,6 +46,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         members: this.properties.members ?? [],
+        group: this.properties.group ?? [],
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`
       }
     );
@@ -143,7 +144,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                 PropertyPaneDropdown('group', {
                   label: strings.GroupAzureFieldLabel,
                   options: this._groupOptions.length > 0 ? this._groupOptions : [{ key: '', text: 'Carregando...' }],
-                  selectedKey: this.properties.group
+                  selectedKey: `${this.properties.group}`,
                 })
               ]
             }
@@ -153,16 +154,16 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     };
   }
 
-  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): Promise<void> {
-    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+  protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
+    if (this.properties.group) {
+      super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    }
 
     if (this.properties.group && propertyPath === 'group' && newValue !== oldValue) {
-      this.properties.group = newValue;
+      this.properties.group = `${newValue}`;
       this.properties.members = await this._fetchGroupMembers(newValue);
       this.render();
     }
-
-    console.log(this.properties.group)
   }
 
 
@@ -170,7 +171,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     return this.context.aadHttpClientFactory.getClient('https://graph.microsoft.com');
   }
 
-  private async _fetchGroups(): Promise<{ key: string; text: string }[]> {
+  private async _fetchGroups(): Promise<IBirthdaysMembersGroupsItem[]> {
     const client = await this._getAadHttpClient();
 
     const response: HttpClientResponse = await client.get(
@@ -189,7 +190,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     const data = await response.json();
 
-    const groups = data.value.map((group: any) => ({
+    const groups = data.value.map((group: { id: string; description: string; }) => ({
       key: group.id,
       text: (`${group.description}`).toUpperCase()
     }));
@@ -225,13 +226,12 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         const date = new Date(dateStr);
 
         return new Intl.DateTimeFormat('pt-BR', {
-          year: 'numeric',
           month: 'long',
           day: 'numeric'
         }).format(date).replace(/^\w/, (c) => c.toUpperCase());
       };
 
-      const members = data.value.filter((member: any) => {
+      const members = data.value.filter((member: { officeLocation: string }) => {
         if (!isValidDate(member.officeLocation)) return false;
 
         const birthDate = new Date(member.officeLocation);
@@ -239,11 +239,11 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
         return birthDate.getMonth() === currentMonth;
       })
-        .sort((a: any, b: any) => {
+        .sort((a: { officeLocation: string }, b: { officeLocation: string }) => {
           const dateA = new Date(a.officeLocation).getDate();
           const dateB = new Date(b.officeLocation).getDate();
           return dateA - dateB;
-        }).map((member: any) => (member ? {
+        }).map((member: IBirthdaysMembersItem) => (member ? {
           displayName: member.displayName,
           givenName: member.givenName,
           id: member.id,

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from './BirthdaysMonth.module.scss';
-import type { IBirthdaysMonthProps } from './IBirthdaysMonthProps';
+import type { IBirthdaysMembersItem, IBirthdaysMonthProps } from './IBirthdaysMonthProps';
 // import { escape } from '@microsoft/sp-lodash-subset';
 import { ActivityItem, Link, mergeStyleSets, PersonaSize } from '@fluentui/react';
 import { TestImages } from '@fluentui/example-data';
@@ -33,13 +33,13 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
       <section className={`${styles.birthdaysMonth} ${hasTeamsContext ? styles.teams : ''}`}>
         {this.props.title && (
           <>
-            <h2>{this.props.title}</h2>
+            <h2 className={styles.title}>{this.props.title}</h2>
             <hr />
           </>
         )}
         <div className={classNames['overflow-400']}>
           {this.props.members && this.props.members.length > 0 ? (
-            this.props.members.map((member: any, index: number) => (
+            this.props.members.map((member: IBirthdaysMembersItem, index: number) => (
               <ActivityItem
                 key={index}
                 activityDescription={[
