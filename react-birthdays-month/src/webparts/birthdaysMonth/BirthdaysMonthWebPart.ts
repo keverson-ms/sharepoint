@@ -28,71 +28,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _environmentMessage: string = '';
   private _groupOptions: { key: string; text: string }[] = [];
 
-  private async _fetchGroups(): Promise<{ key: string; text: string }[]> {
-    const client = await this._getAadHttpClient();
-
-    // Chamada à API Graph para obter os grupos
-    const response: HttpClientResponse = await client.get(
-      "https://graph.microsoft.com/v1.0/groups?$select=id,displayName,description&$filter=((NOT groupTypes/any(c:c eq 'Unified')) and (mailEnabled eq true) and (description ne null))&$count=true&$top=999",
-      AadHttpClient.configurations.v1,
-      {
-        headers: {
-          'ConsistencyLevel': 'eventual'
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar grupos: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    const groups = data.value.map((group: any) => ({
-      key: group.id,
-      text: (`${group.displayName !== group.description ? group.displayName + ' - ' + group.description : group.description}`).toUpperCase()
-    }));
-
-    return groups;
-  }
-
-  private async _fetchGroupMembers(groupId: string = this.properties.group): Promise<IBirthdaysMembersItem[]> {
-
-    const client = await this._getAadHttpClient();
-
-    const response: HttpClientResponse = await client.get(
-      `https://graph.microsoft.com/v1.0/groups/${groupId}/members`,
-      AadHttpClient.configurations.v1,
-      {
-        headers: {
-          'ConsistencyLevel': 'eventual'
-        }
-      }
-    );
-
-
-    const data = await response.json();
-
-    const members = data.value.map((member: any) => (member ? {
-      displayName: member.displayName,
-      givenName: member.givenName,
-      id: member.id,
-      jobTitle: member.jobTitle,
-      mail: member.mail,
-      mobilePhone: member.mobilePhone,
-      officeLocation: member.officeLocation,
-      preferredLanguage: member.preferredLanguage,
-      surname: member.surname,
-      userPrincipalName: member.userPrincipalName
-    } : null));
-
-    return members;
-  }
-
-  private async _getAadHttpClient(): Promise<AadHttpClient> {
-    return this.context.aadHttpClientFactory.getClient('https://graph.microsoft.com');
-  }
-
   public render(): void {
 
     const getMonth = (): string => {
@@ -120,7 +55,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     await super.onInit();
 
     this._groupOptions = await this._fetchGroups();
-    this.properties.members = await this._fetchGroupMembers(this.properties.group);
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -220,12 +154,79 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): Promise<void> {
     super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
 
-    // Verifica se o campo alterado foi o "group"
-    if (propertyPath === 'group' && newValue !== oldValue) {
+    if (this.properties.group && propertyPath === 'group' && newValue !== oldValue) {
       this.properties.group = newValue;
-      console.log(this.properties.group, newValue);
-      // Chama a API para buscar os membros do grupo selecionado
       this.properties.members = await this._fetchGroupMembers(newValue);
+      this.render();
     }
   }
+
+
+  private async _getAadHttpClient(): Promise<AadHttpClient> {
+    return this.context.aadHttpClientFactory.getClient('https://graph.microsoft.com');
+  }
+
+  private async _fetchGroups(): Promise<{ key: string; text: string }[]> {
+    const client = await this._getAadHttpClient();
+
+    const response: HttpClientResponse = await client.get(
+      "https://graph.microsoft.com/v1.0/groups?$select=id,displayName,description&$filter=((NOT groupTypes/any(c:c eq 'Unified')) and (mailEnabled eq true) and (description ne null))&$count=true&$top=999",
+      AadHttpClient.configurations.v1,
+      {
+        headers: {
+          'ConsistencyLevel': 'eventual'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro ao buscar grupos: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+
+    const groups = data.value.map((group: any) => ({
+      key: group.id,
+      text: (`${group.displayName !== group.description ? group.displayName + ' - ' + group.description : group.description}`).toUpperCase()
+    }));
+
+    return groups;
+  }
+
+  private async _fetchGroupMembers(groupId: string): Promise<IBirthdaysMembersItem[]> {
+
+    if (groupId) {
+      const client = await this._getAadHttpClient();
+
+      const response: HttpClientResponse = await client.get(
+        `https://graph.microsoft.com/v1.0/groups/${groupId}/members?$count=true&$filter=(accountEnabled eq true)&$top=999`,
+        AadHttpClient.configurations.v1,
+        {
+          headers: {
+            'ConsistencyLevel': 'eventual'
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      const members = data.value.map((member: any) => (member ? {
+        displayName: member.displayName,
+        givenName: member.givenName,
+        id: member.id,
+        jobTitle: member.jobTitle,
+        mail: member.mail,
+        mobilePhone: member.mobilePhone,
+        officeLocation: member.officeLocation,
+        preferredLanguage: member.preferredLanguage,
+        surname: member.surname,
+        userPrincipalName: member.userPrincipalName
+      } : null));
+
+      return members;
+    }
+
+    return [];
+  }
+
 }

@@ -7,15 +7,6 @@ import { TestImages } from '@fluentui/example-data';
 
 export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps> {
 
-  public componentDidMount(): void {
-    this.componentDidUpdate(this.props);
-  }
-
-  public componentDidUpdate(prevProps: IBirthdaysMonthProps): void {
-    console.log(prevProps.members);
-    prevProps.title !== this.props.title;
-    prevProps.members !== this.props.members;
-  }
   public render(): React.ReactElement<IBirthdaysMonthProps> {
     const {
       // isDarkTheme,
@@ -58,6 +49,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
       }
     ];
 
+    console.log(this.props.members);
     return (
       <section className={`${styles.birthdaysMonth} ${hasTeamsContext ? styles.teams : ''}`}>
         {this.props.title && (
