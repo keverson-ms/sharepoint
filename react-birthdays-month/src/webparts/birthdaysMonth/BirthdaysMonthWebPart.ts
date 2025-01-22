@@ -20,6 +20,7 @@ export interface IBirthdaysMonthWebPartProps {
   messageDefault: boolean;
   group: string;
   members: IBirthdaysMembersItem[];
+  absoluteUrl: string;
 }
 
 export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthdaysMonthWebPartProps> {
@@ -44,7 +45,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        members: this.properties.members,
+        members: this.properties.members ?? [],
+        absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`
       }
     );
 
@@ -159,6 +161,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
       this.properties.members = await this._fetchGroupMembers(newValue);
       this.render();
     }
+
+    console.log(this.properties.group)
   }
 
 
@@ -170,7 +174,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     const client = await this._getAadHttpClient();
 
     const response: HttpClientResponse = await client.get(
-      "https://graph.microsoft.com/v1.0/groups?$select=id,displayName,description&$filter=((NOT groupTypes/any(c:c eq 'Unified')) and (mailEnabled eq true) and (description ne null))&$count=true&$top=999",
+      "https://graph.microsoft.com/v1.0/groups?$select=id,displayName,description&$filter=((NOT groupTypes/any(c:c eq 'Unified')) and (mailEnabled eq true) and (securityEnabled eq true) and (description%20ne%20null))&$count=true&$top=999",
       AadHttpClient.configurations.v1,
       {
         headers: {
@@ -187,7 +191,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     const groups = data.value.map((group: any) => ({
       key: group.id,
-      text: (`${group.displayName !== group.description ? group.displayName + ' - ' + group.description : group.description}`).toUpperCase()
+      text: (`${group.description}`).toUpperCase()
     }));
 
     return groups;
@@ -210,18 +214,49 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
       const data = await response.json();
 
-      const members = data.value.map((member: any) => (member ? {
-        displayName: member.displayName,
-        givenName: member.givenName,
-        id: member.id,
-        jobTitle: member.jobTitle,
-        mail: member.mail,
-        mobilePhone: member.mobilePhone,
-        officeLocation: member.officeLocation,
-        preferredLanguage: member.preferredLanguage,
-        surname: member.surname,
-        userPrincipalName: member.userPrincipalName
-      } : null));
+      const isValidDate = (dateStr: string): boolean => {
+        const date = new Date(dateStr);
+        return !isNaN(date.getTime());
+      };
+
+      const formatDateToPortuguese = (dateStr: string): string | null => {
+        if (!isValidDate(dateStr)) return null;
+
+        const date = new Date(dateStr);
+
+        return new Intl.DateTimeFormat('pt-BR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }).format(date).replace(/^\w/, (c) => c.toUpperCase());
+      };
+
+      const members = data.value.filter((member: any) => {
+        if (!isValidDate(member.officeLocation)) return false;
+
+        const birthDate = new Date(member.officeLocation);
+        const currentMonth = new Date().getMonth();
+
+        return birthDate.getMonth() === currentMonth;
+      })
+        .sort((a: any, b: any) => {
+          const dateA = new Date(a.officeLocation).getDate();
+          const dateB = new Date(b.officeLocation).getDate();
+          return dateA - dateB;
+        }).map((member: any) => (member ? {
+          displayName: member.displayName,
+          givenName: member.givenName,
+          id: member.id,
+          jobTitle: member.jobTitle,
+          mail: member.mail,
+          mobilePhone: member.mobilePhone,
+          officeLocation: member.officeLocation,
+          dateBirth: isValidDate(member.officeLocation) ? member.officeLocation : null,
+          dateBirthExtension: isValidDate(member.officeLocation) ? formatDateToPortuguese(member.officeLocation) : null,
+          preferredLanguage: member.preferredLanguage,
+          surname: member.surname,
+          userPrincipalName: member.userPrincipalName
+        } : null));
 
       return members;
     }
