@@ -40,7 +40,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     const element: React.ReactElement<IBirthdaysMonthProps> = React.createElement(
       BirthdaysMonth,
       {
-        title: this.properties.title = (this.properties.messageDefault ? (this.properties.title = 'Aniversariantes do Mês - ' + getMonth().replace(/^\w/, (c) => c.toUpperCase())) : this.properties.title),
+        title: this.properties.title = (this.properties.messageDefault || !this.properties.title ? (this.properties.title = 'Aniversariantes do Mês - ' + getMonth().replace(/^\w/, (c) => c.toUpperCase())) : this.properties.title),
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -134,7 +134,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                 }),
                 PropertyPaneToggle('messageDefault', {
                   label: strings.MessageDefaultFieldLabel,
-                  checked: this.properties.messageDefault,
+                  checked: this.properties.title && this.properties.messageDefault ? true : false,
                   onText: 'Sim',
                   offText: 'Não',
                   onAriaLabel: 'Y',
