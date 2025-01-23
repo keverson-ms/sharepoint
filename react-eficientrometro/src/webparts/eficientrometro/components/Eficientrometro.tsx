@@ -1,41 +1,44 @@
 import * as React from 'react';
 import styles from './Eficientrometro.module.scss';
 import type { IEficientrometroProps } from './IEficientrometroProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+// import { escape } from '@microsoft/sp-lodash-subset';
+// import { Fabric } from 'office-ui-fabric-react/lib/Fabric';
 
 export default class Eficientrometro extends React.Component<IEficientrometroProps> {
   public render(): React.ReactElement<IEficientrometroProps> {
     const {
-      description,
+      title,
       isDarkTheme,
-      environmentMessage,
       hasTeamsContext,
-      userDisplayName
     } = this.props;
 
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
-        <div className={styles.welcome}>
-          <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-          <h2>Well done, {escape(userDisplayName)}!</h2>
-          <div>{environmentMessage}</div>
-          <div>Web part property value: <strong>{escape(description)}</strong></div>
-        </div>
-        <div>
-          <h3>Welcome to SharePoint Framework!</h3>
-          <p>
-            The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-          </p>
-          <h4>Learn more about SPFx development:</h4>
-          <ul className={styles.links}>
-            <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-            <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-            <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-          </ul>
+        <div className={styles['ms-Grid']}>
+          <div className={`${styles['ms-Grid-row']} ${styles['ms-borderColor-black']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${isDarkTheme ? '' : styles.filterInverted}`}>
+              <img alt="" src={isDarkTheme ? require('../assets/marca_sistema_preta.png') : require('../assets/marca_sistema_branca.png')} className={styles.welcomeImage} />
+            </div>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
+              <h2 className={`${styles['ms-fontSize-su']} ${styles['ms-fontWeight-bold']}`}>{title}</h2>
+            </div>
+          </div>
+          <div className={styles['ms-Grid-row']}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']} ${styles['ms-font-l']}`}>
+              R$ <span className={`counter-up`}>150.250,33</span>
+            </div>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']}`}>
+              <span className={`counter-up`}>4.000 hs</span>
+            </div>
+          </div>
+          <div className={styles['ms-Grid-row']}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']}`}>
+              Economia gerada 2025 (acumulada)
+            </div>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']}`}>
+              Ganho de Produtividade Operacional
+            </div>
+          </div>
         </div>
       </section>
     );

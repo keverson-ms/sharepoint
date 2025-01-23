@@ -113,7 +113,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
   }
 
-
   /**
    * Called when the component is disposed of
    * This is where we do cleanup for the component

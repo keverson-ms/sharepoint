@@ -3,7 +3,7 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -11,9 +11,10 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'EficientrometroWebPartStrings';
 import Eficientrometro from './components/Eficientrometro';
 import { IEficientrometroProps } from './components/IEficientrometroProps';
+// import { FieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-controls-react/lib/FieldCollectionData';
 
 export interface IEficientrometroWebPartProps {
-  description: string;
+  title: string;
 }
 
 export default class EficientrometroWebPart extends BaseClientSideWebPart<IEficientrometroWebPartProps> {
@@ -25,7 +26,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
       {
-        description: this.properties.description,
+        title: this.properties.title = (this.properties.title ?? 'Eficientrômetro CSC'),
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -36,13 +37,13 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     ReactDom.render(element, this.domElement);
   }
 
-  protected onInit(): Promise<void> {
+  protected async onInit(): Promise<void> {
+    await super.onInit();
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
   }
-
-
 
   private _getEnvironmentMessage(): Promise<string> {
     if (!!this.context.sdks.microsoftTeams) { // running in Teams, office.com or Outlook
@@ -106,10 +107,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField('title', {
+                  label: strings.TitleFieldLabel
                 })
               ]
             }
