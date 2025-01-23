@@ -32,10 +32,10 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             </div>
           </div>
           <div className={styles['ms-Grid-row']}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-font-xl']} ${styles['ms-fontWeight-bold']}`}>
               Economia gerada 2025 (acumulada)
             </div>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-font-xl']} ${styles['ms-fontWeight-bold']}`}>
               Ganho de Produtividade Operacional
             </div>
           </div>
