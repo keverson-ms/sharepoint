@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "2b076ccc-fb73-4453-bdf1-487bd0ae674f",
+  "alias": "EficientrometroWebPart",
+  "componentType": "WebPart",
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2,
+  // If true, the component can only be installed on sites where Custom Script is allowed.
+  // Components that allow authors to embed arbitrary script code should set this to true.
+  // https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
+  "requiresCustomScript": false,
+  "supportedHosts": [
+    "SharePointWebPart",
+    "TeamsPersonalApp",
+    "TeamsTab",
+    "SharePointFullPage"
+  ],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
+      "group": {
+        "default": "Advanced"
+      },
+      "title": {
+        "default": "Eficientrômetro"
+      },
+      "description": {
+        "default": "Eficientrômetro"
+      },
+      "iconImageUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAABDNJREFUWIW91X+o32UVB/DXefTebcScM9es5sJV1iYmadGVwjDWqjFEo8I5q7UkB/2wUv+o3B+F0EJZUH+00nTzJ7WoheVGi2xLnC41soIyIsJoUDaUhYU/Pu/+uJ+2r3d3u997MQ888DznOc/7vM9znuecMmPJBconQTmgs4Z6droobcb+m7cre8U28Rq8ZMZYM5MsU9mvslfLlpmi1JDO1iiXiy+gUz6PZ5Xf6fxLc6pYpuzW2aT5sniFuJQ6eCzk44/icBEW9ou/K6vFlcpdyg6dj+I5MYYTdHbjAbFKeQi3K3PEUuybwQ1kveaNoPMI7lF+JjbhW5qvigVij2YRnhbni2uxT/mx8rCu1h3L+TQk52m5jcxT2UNWk/eRUfImUmSDyvfIx8gZKj+aiaPZWu7U8t1DQ9ap3EUWa/kmWT9gv1DLdQPr01T2kVf3tm+eyuOEN1D/0eVyHDeoxCV4QpyGHw7szcaCgfUCcb3m0zig3KDyW52HcDP1xDEIZCEWTUJyVHlUnK08KO49ejy1jzwpbhQbsEaM4kxlt2Q9tfdoNzCmOfcIzM4f8G/MwTwsxQP97uPidDJCPUNGlVvFW/Co5itYrLNW7FB2SZZTjx89iCMkp6hs6/O6lcyasP8J8pl+/gHyuX6+VsvXyWe1XNvr3k+uGTw9oRRP9gitxMvxmFiEKycw3IyDPdoYdvb6P4pz8JTOTb1upzI2VcRzyfyBMUo+1Uc6prKTvIqsGDhT5GItm8nZve4N5CRy2fgX7rEnfM9JKmEdHHfg5F7xT2wez5+fi68p3xHfJq/Ee3C/ZqU4C3/Fw3iv5jidxwbAV4r7prgByIe1bNSykXyk152qch85v4/sKpUfqOzqI1/eF6r95AwyomVTX0vmkpep/Iq89HnhDsFmkNhJmk1inrgDj+BJLMYKZZXYqqwTd+Knxm/5LOUK8XHsx5+pzIDAISJLcIFmGebibzp7cHf/HWdhteY8HK/zS2xXtij/QKerS4aPWq5R2aHyYD/u1XIrefeQGHNUfkLeASq7xtMy9cFz+rytIQMlN0WWaLlO5dcDxP437u97wXwyorKdXNSfPVfl+8M4H1P5RV+ipykpcpGW27TcQvq2nHkqe4fAzNv6tnvyFIbHwhhReYpcdUjVcgd516DVhEeYKzRvFaeIC6kDQzg6E6+foCzNKvxFVxt6u3Wapbq6etDwcCFq2YjndL6k3IATMQQBJ2D+EdrONw53vrxO+ZDOiiPseoO5KgNtNqf3uVoyBIEpJLP6dL722Hbj+Vn7wpJIabmRXDqM8UhfNl8AEpndf7fth1v15DLxEY5obte5m9pymISt4oO4WHknnp6CwTPK73Vupn4zPfLj32fbJDfxJy1fnCbYTGVSEleTC18kAs8jcRlZrnIPmfMiEuhJtFyv5SZy4v/Dw38B/xPkSIDCvGsAAAAASUVORK5CYII=",
+      "properties": {
+        "description": "Eficientrômetro"
+      }
+    }
+  ]
+}
