@@ -15,7 +15,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={styles['ms-Grid']}>
-          <div className={`${styles['ms-Grid-row']} ${styles['ms-borderColor-black']}`}>
+          <div className={`${styles['ms-Grid-row']}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${isDarkTheme ? '' : styles.filterInverted}`}>
               <img alt="" src={isDarkTheme ? require('../assets/marca_sistema_preta.png') : require('../assets/marca_sistema_branca.png')} className={styles.welcomeImage} />
             </div>
@@ -24,18 +24,18 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             </div>
           </div>
           <div className={styles['ms-Grid-row']}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']} ${styles['ms-font-l']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-font-l']}`}>
               R$ <span className={`counter-up`}>150.250,33</span>
             </div>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
               <span className={`counter-up`}>4.000 hs</span>
             </div>
           </div>
           <div className={styles['ms-Grid-row']}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ms-fontSize-68`}>
               Economia gerada 2025 (acumulada)
             </div>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-borderColor-black']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ms-fontSize-68`}>
               Ganho de Produtividade Operacional
             </div>
           </div>

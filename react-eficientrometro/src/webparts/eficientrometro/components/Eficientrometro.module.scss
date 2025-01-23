@@ -1,5 +1,8 @@
 @import '~@fluentui/react/dist/sass/References.scss';
-@import '~office-ui-fabric-react/dist/sass/Fabric.scss';
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/FabricCore.global.scss';
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/ThemeOverrides.global.scss';
+@import '~office-ui-fabric-core/dist/sass/References.scss';
 
 .eficientrometro {
   overflow: hidden;

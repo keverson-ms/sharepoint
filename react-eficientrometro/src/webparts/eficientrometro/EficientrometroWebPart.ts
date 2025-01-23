@@ -110,7 +110,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
               groupFields: [
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel
-                })
+                }),
               ]
             }
           ]
