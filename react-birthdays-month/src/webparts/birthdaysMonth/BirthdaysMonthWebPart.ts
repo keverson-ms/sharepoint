@@ -5,7 +5,8 @@ import {
   type IPropertyPaneConfiguration,
   PropertyPaneDropdown,
   PropertyPaneTextField,
-  PropertyPaneToggle
+  PropertyPaneToggle,
+  PropertyPaneSlider
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -21,6 +22,7 @@ export interface IBirthdaysMonthWebPartProps {
   group: string;
   members: IBirthdaysMembersItem[];
   absoluteUrl: string;
+  overflow: number;
 }
 
 export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthdaysMonthWebPartProps> {
@@ -28,6 +30,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private _groupOptions: { key: string; text: string }[] = [];
+  // private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
 
   public render(): void {
 
@@ -47,7 +50,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         userDisplayName: this.context.pageContext.user.displayName,
         members: this.properties.members ?? [],
         group: this.properties.group ?? [],
-        absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`
+        absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
+        overflow: this.properties.overflow ?? 0
       }
     );
 
@@ -109,6 +113,12 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
   }
 
+
+  /**
+   * Called when the component is disposed of
+   * This is where we do cleanup for the component
+   * @override
+   */
   protected onDispose(): void {
     ReactDom.unmountComponentAtNode(this.domElement);
   }
@@ -128,11 +138,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
           groups: [
             {
               groupFields: [
-                PropertyPaneTextField('title', {
-                  label: strings.TitleSectionFieldLabel,
-                  value: this.properties.title,
-                  disabled: this.properties.messageDefault
-                }),
                 PropertyPaneToggle('messageDefault', {
                   label: strings.MessageDefaultFieldLabel,
                   checked: this.properties.title && this.properties.messageDefault ? true : false,
@@ -141,10 +146,22 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   onAriaLabel: 'Y',
                   offAriaLabel: 'N'
                 }),
+                PropertyPaneTextField('title', {
+                  label: strings.TitleSectionFieldLabel,
+                  value: this.properties.title,
+                  disabled: this.properties.messageDefault
+                }),
                 PropertyPaneDropdown('group', {
                   label: strings.GroupAzureFieldLabel,
                   options: this._groupOptions.length > 0 ? this._groupOptions : [{ key: '', text: 'Carregando...' }],
                   selectedKey: `${this.properties.group}`,
+                }),
+                PropertyPaneSlider('overflow', {
+                  label: 'Barra de Rolagem',
+                  min: 300,
+                  max: 1000,
+                  value: this.properties.overflow,
+                  disabled: this.properties.group ? false : true
                 })
               ]
             }

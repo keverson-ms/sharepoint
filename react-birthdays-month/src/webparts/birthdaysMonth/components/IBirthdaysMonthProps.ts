@@ -7,6 +7,7 @@ export interface IBirthdaysMonthProps {
   members: IBirthdaysMembersItem[];
   group: string;
   absoluteUrl: string;
+  overflow: number;
 }
 
 export interface IBirthdaysMembersItem {

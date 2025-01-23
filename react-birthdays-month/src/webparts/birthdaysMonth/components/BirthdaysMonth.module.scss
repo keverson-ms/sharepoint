@@ -23,6 +23,11 @@
   }
 }
 
+.perfil {
+  width: 42px;
+  height: 42px;
+}
+
 .welcome {
   text-align: center;
 }
@@ -44,4 +49,20 @@
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
     }
   }
+}
+
+.root {
+  margin-top: 20px;
+}
+
+.fontWeightBold {
+  font-weight: bold;
+}
+
+.fontSize1 {
+  font-size: 1rem;
+}
+
+.overflow {
+  overflow: 'overlay';
 }
