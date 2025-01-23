@@ -24,18 +24,18 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             </div>
           </div>
           <div className={styles['ms-Grid-row']}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-font-l']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-font-su']} ${styles['ms-fontWeight-bold']}`}>
               R$ <span className={`counter-up`}>150.250,33</span>
             </div>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-font-su']} ${styles['ms-fontWeight-bold']}`}>
               <span className={`counter-up`}>4.000 hs</span>
             </div>
           </div>
           <div className={styles['ms-Grid-row']}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-fontSize-68']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
               Economia gerada 2025 (acumulada)
             </div>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']} ${styles['ms-fontSize-68']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm6']} ${styles['ms-md6']} ${styles['ms-lg6']}`}>
               Ganho de Produtividade Operacional
             </div>
           </div>
