@@ -4,6 +4,8 @@ import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
   PropertyPaneTextField,
+  PropertyPaneSlider,
+  PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -15,6 +17,9 @@ import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/sp
 export interface IEficientrometroWebPartProps {
   title: string;
   background: string;
+  title_size: number;
+  titleAlignCenter: boolean;
+  color: boolean;
 }
 
 export default class EficientrometroWebPart extends BaseClientSideWebPart<IEficientrometroWebPartProps> {
@@ -27,6 +32,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       Eficientrometro,
       {
         title: this.properties.title = (this.properties.title ?? 'Eficientrômetro CSC'),
+        title_size: this.properties.title_size = (this.properties.title_size ?? 3),
+        color: this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false,
         background: this.properties.background = (this.properties.background ?? this.domElement.style.getPropertyValue('--link')),
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
@@ -37,16 +44,28 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     this.domElement.style.setProperty('--background-valores', this.properties.background);
     this.domElement.style.setProperty('--text-valores', this.getContrastColor(this.properties.background));
+    this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
+    this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
     ReactDom.render(element, this.domElement);
   }
 
-  protected onPropertyChange(propertyPath: string, newValue: any): void {
+  protected onPropertyChange(propertyPath: string, newValue: string): void {
+
     if (propertyPath === "background") {
-      // Atualiza a variável CSS quando a cor de fundo for alterada
       this.domElement.style.setProperty('--background-valores', newValue);
-      this.domElement.style.setProperty('--text-valores', this.getContrastColor(this.properties.background));
+      this.domElement.style.setProperty('--text-valores', this.getContrastColor(`${this.properties.background}`));
     }
+
+    if (propertyPath === "title_size") {
+      this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
+    }
+
+    if (propertyPath === "titleAlignCenter") {
+      this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
+    }
+
+    this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
   }
 
   protected async onInit(): Promise<void> {
@@ -86,6 +105,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
   private getContrastColor(backgroundColor: string): string {
     const luminance = this.getLuminance(backgroundColor);
+
     return luminance > 0.5 ? 'black' : 'white';
   }
 
@@ -142,6 +162,16 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
               groupFields: [
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel
+                }),
+                PropertyPaneSlider('title_size', {
+                  label: strings.TitleSizeFieldLabel,
+                  min: 2,
+                  max: 4,
+                  value: this.properties.title_size
+                }),
+                PropertyPaneToggle('titleAlignCenter', {
+                  label: 'Alinhar título ao centro',
+                  checked: this.properties.titleAlignCenter
                 }),
                 PropertyFieldColorPicker('background', {
                   label: 'Cor de Fundo dos valores',

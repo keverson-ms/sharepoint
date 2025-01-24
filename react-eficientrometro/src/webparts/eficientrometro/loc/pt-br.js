@@ -1,8 +1,10 @@
 define([], function () {
   return {
-    "PropertyPaneDescription": "Description",
+    "PropertyPaneDescription": "Elemento para lançamento de valores e horas de eficiência",
     "BasicGroupName": "Group Name",
     "TitleFieldLabel": "Título",
+    "TitleAlignCenterFieldLabel": "Alinhar título ao centro",
+    "TitleSizeFieldLabel": "Tamanho do Título",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
     "AppLocalEnvironmentOffice": "The app is running on your local environment in office.com",
