@@ -26,7 +26,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
           <div className={styles['ms-Grid-row']}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
               <div className={`${styles.valores} ${styles['ms-font-su']} ${styles['ms-fontWeight-bold']}`}>
-                R$ <span className={`counter-up`}>150.250,33</span>
+                R$ <span className={`counter-up`} data-value="150.250,33">150.250,33</span>
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
                 Economia gerada 2025 (acumulada)
@@ -34,7 +34,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             </div>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
               <div className={`${styles.valores} ${styles['ms-font-su']} ${styles['ms-fontWeight-bold']}`}>
-                <span className={`counter-up`}>4.000</span> hs
+                <span className={`counter-up`} data-value="4.000">4.000</span> hs
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
                 Ganho de Produtividade Operacional

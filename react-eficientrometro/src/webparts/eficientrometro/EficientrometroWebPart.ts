@@ -48,6 +48,48 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
     ReactDom.render(element, this.domElement);
+
+    this.animateCounterUp();
+  }
+
+  private animateCounterUp(): void {
+    const elements = this.domElement.querySelectorAll(".counter-up");
+
+    elements.forEach((element: Element) => {
+      console.log(element.getAttribute("data-value"), 'Keverson');
+      const text = element.getAttribute("data-value") ?? "0";
+
+      // Conversão de formato brasileiro para americano
+      const value = parseFloat(text.replace(/\./g, "").replace(",", "."));
+
+      if (!isNaN(value)) {
+        const startValue = 0;
+        const duration = 10000; // Duração da animação em milissegundos
+        let startTime: number | null = null;
+
+        const animate = (currentTime: number) => {
+          if (!startTime) startTime = currentTime;
+          const progress = Math.min((currentTime - startTime) / duration, 1);
+          const currentValue = startValue + (value - startValue) * progress;
+
+          // Formatar número no formato brasileiro
+          const formattedValue = (value % 1 === 0)
+            ? Math.ceil(currentValue).toLocaleString("pt-BR")
+            : currentValue.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
+
+          element.textContent = formattedValue;
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          }
+        };
+
+        requestAnimationFrame(animate);
+      }
+    });
   }
 
   protected onPropertyChange(propertyPath: string, newValue: string): void {
