@@ -56,7 +56,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const elements = this.domElement.querySelectorAll(".counter-up");
 
     elements.forEach((element: Element) => {
-      console.log(element.getAttribute("data-value"), 'Keverson');
       const text = element.getAttribute("data-value") ?? "0";
 
       // Conversão de formato brasileiro para americano
