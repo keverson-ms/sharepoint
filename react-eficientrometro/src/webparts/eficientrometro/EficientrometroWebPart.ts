@@ -11,10 +11,10 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'EficientrometroWebPartStrings';
 import Eficientrometro from './components/Eficientrometro';
 import { IEficientrometroProps } from './components/IEficientrometroProps';
-// import { FieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-controls-react/lib/FieldCollectionData';
-
+import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 export interface IEficientrometroWebPartProps {
   title: string;
+  background: string;
 }
 
 export default class EficientrometroWebPart extends BaseClientSideWebPart<IEficientrometroWebPartProps> {
@@ -27,6 +27,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       Eficientrometro,
       {
         title: this.properties.title = (this.properties.title ?? 'Eficientrômetro CSC'),
+        background: this.properties.background = (this.properties.background ?? this.domElement.style.getPropertyValue('--link')),
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -34,7 +35,18 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       }
     );
 
+    this.domElement.style.setProperty('--background-valores', this.properties.background);
+    this.domElement.style.setProperty('--text-valores', this.getContrastColor(this.properties.background));
+
     ReactDom.render(element, this.domElement);
+  }
+
+  protected onPropertyChange(propertyPath: string, newValue: any): void {
+    if (propertyPath === "background") {
+      // Atualiza a variável CSS quando a cor de fundo for alterada
+      this.domElement.style.setProperty('--background-valores', newValue);
+      this.domElement.style.setProperty('--text-valores', this.getContrastColor(this.properties.background));
+    }
   }
 
   protected async onInit(): Promise<void> {
@@ -70,6 +82,26 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     }
 
     return Promise.resolve(this.context.isServedFromLocalhost ? strings.AppLocalEnvironmentSharePoint : strings.AppSharePointEnvironment);
+  }
+
+  private getContrastColor(backgroundColor: string): string {
+    const luminance = this.getLuminance(backgroundColor);
+    return luminance > 0.5 ? 'black' : 'white';
+  }
+
+  private getLuminance(color: string): number {
+    if (color[0] === '#') color = color.slice(1);
+
+    const r = parseInt(color.slice(0, 2), 16);
+    const g = parseInt(color.slice(2, 4), 16);
+    const b = parseInt(color.slice(4, 6), 16);
+
+    const a = [r, g, b].map(function (v) {
+      v /= 255;
+      return (v <= 0.03928) ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
   }
 
   protected onThemeChanged(currentTheme: IReadonlyTheme | undefined): void {
@@ -111,6 +143,20 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel
                 }),
+                PropertyFieldColorPicker('background', {
+                  label: 'Cor de Fundo dos valores',
+                  selectedColor: `${this.properties.background}`,
+                  onPropertyChange: this.onPropertyPaneFieldChanged,
+                  properties: this.properties,
+                  disabled: false,
+                  debounce: 500,
+                  isHidden: false,
+                  alphaSliderHidden: false,
+                  style: PropertyFieldColorPickerStyle.Inline,
+                  iconName: 'Precipitation',
+                  key: 'background',
+                  showPreview: true,
+                })
               ]
             }
           ]
