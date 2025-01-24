@@ -17,7 +17,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
         <div className={`${styles['ms-Grid']}`}>
           <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md3']} ${styles['ms-lg3']} ${isDarkTheme ? '' : styles.filterInverted}`}>
-              <img alt="" src={!this.props.color ? require('../assets/marca_sistema_preta.png') : require('../assets/marca_sistema_branca.png')} className={styles.welcomeImage} />
+              <img alt="" src={this.props.color ? require('../assets/marca_sistema_branca.png') : require('../assets/marca_sistema_preta.png')} className={styles.welcomeImage} />
             </div>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md9']} ${styles['ms-lg9']}`}>
               <h2 className={`${styles.title} ${styles['ms-fontWeight-bold']}`}>{title}</h2>
