@@ -70,7 +70,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return items;
   }
 
-  protected getHoras(): number {
+  protected async getHoras(): Promise<number> {
     const horas = this.getItems().map((item: { horas: number }) => item.horas)
       .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
 
@@ -122,6 +122,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   }
 
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
+
+    if (this.properties.year) {
+      super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    }
+
     if (propertyPath === "background" && newValue !== oldValue) {
       this.domElement.style.setProperty('--background-valores', newValue);
       this.domElement.style.setProperty('--text-valores', this.getContrastColor(`${this.properties.background}`));
@@ -138,9 +143,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
 
     if (propertyPath === "year" && newValue !== oldValue) {
-      console.log(typeof newValue, newValue, oldValue);
-      this.properties.items = this.getItems();
-      this.properties.year = newValue;
+      this.properties.year = `${this.getHoras()}`;
     }
   }
 
@@ -148,7 +151,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     await super.onInit();
 
-    this.properties.totalHoras = this.getHoras();
+    this.properties.totalHoras = await this.getHoras();
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
