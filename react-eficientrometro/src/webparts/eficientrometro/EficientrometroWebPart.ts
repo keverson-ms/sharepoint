@@ -49,7 +49,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         year: this.properties.year = (this.properties.year ?? new Date().getFullYear()),
-        totalHoras: this.properties.totalHoras = this.getHoras(),
+        totalHoras: this.properties.totalHoras,
       }
     );
 
@@ -136,9 +136,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     }
 
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
-    
+
     if (propertyPath === "year" && newValue !== oldValue) {
-      return this.properties.year = newValue;
+      console.log(typeof newValue, newValue, oldValue);
+      this.properties.items = this.getItems();
+      this.properties.year = newValue;
     }
   }
 
