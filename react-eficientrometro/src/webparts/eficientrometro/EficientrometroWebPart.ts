@@ -48,7 +48,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        totalHoras: this.properties.totalHoras ?? 0
+        totalHoras: this.properties.totalHoras = this.getHoras(),
       }
     );
 
@@ -57,29 +57,30 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
-    this.properties.items = this.properties.items ?? [];
-
     ReactDom.render(element, this.domElement);
-
     this.animateCounterUp();
   }
 
-  protected async getItems() {
+  protected getItems(): IEficientrometroCollectionDataProps[] {
     const items = this.properties.items?.filter((item: { ano: string | number }) => {
       return this.properties.year === item.ano;
     }) ?? [];
-    console.log('items', items);
-
-    this.properties.totalHoras = items.map((item: { horas: number }) => item.horas)
-      .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
-
-    console.log(this.properties.totalHoras);
-
-    this.properties.totalValores = items.map((item: { valor: number }) => item.valor)
-      .reduce((a: string | number, b: string | number) => parseFloat(String(a).replace(/[^\d]/g, "").replace(",", ".")) + parseFloat(String(b).replace(/[^\d]/g, "").replace(",", ".")), 0);
-    console.log(this.properties.totalValores);
 
     return items;
+  }
+
+  protected getHoras(): number {
+    const horas = this.getItems().map((item: { horas: number }) => item.horas)
+      .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
+
+    return horas;
+  }
+
+  protected totalValores(): number {
+    const valores = this.getItems().map((item: { valor: number }) => item.valor)
+      .reduce((a: string | number, b: string | number) => parseFloat(String(a).replace(/[^\d]/g, "").replace(",", ".")) + parseFloat(String(b).replace(/[^\d]/g, "").replace(",", ".")), 0);
+
+    return valores;
   }
 
   private animateCounterUp(): void {
@@ -119,23 +120,22 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     });
   }
 
-  protected onPropertyChange(propertyPath: string, newValue: string): void {
-
-    if (propertyPath === "background") {
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
+    if (propertyPath === "background" && newValue !== oldValue) {
       this.domElement.style.setProperty('--background-valores', newValue);
       this.domElement.style.setProperty('--text-valores', this.getContrastColor(`${this.properties.background}`));
     }
 
-    if (propertyPath === "title_size") {
+    if (propertyPath === "title_size" && newValue !== oldValue) {
       this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
     }
 
-    if (propertyPath === "titleAlignCenter") {
+    if (propertyPath === "titleAlignCenter" && newValue !== oldValue) {
       this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
     }
 
-    if (propertyPath === "year") {
-      this.getItems();
+    if (propertyPath === "year" && newValue !== oldValue) {
+      this.onInit();
     }
 
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
@@ -143,7 +143,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
   protected async onInit(): Promise<void> {
 
-    await super.onInit(), this.getItems();
+    await super.onInit();
+
+    this.properties.totalHoras = this.getHoras();
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -338,7 +340,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                 PropertyPaneDropdown('year', {
                   label: 'Exibir dados do ano de: ',
                   options: this.getYears(),
-                  selectedKey: this.properties.year ?? new Date().getFullYear(),
+                  selectedKey: this.properties.year || new Date().getFullYear(),
                 }),
                 PropertyFieldColorPicker('background', {
                   label: 'Cor de Fundo dos valores',

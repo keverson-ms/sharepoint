@@ -6,12 +6,9 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
   public render(): React.ReactElement<IEficientrometroProps> {
     const {
       title,
-      totalHoras,
       isDarkTheme,
       hasTeamsContext,
     } = this.props;
-
-    console.log('FrontEnd', this.props.totalHoras, totalHoras)
 
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
@@ -35,7 +32,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             </div>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
               <div className={`${styles.valores} ${styles['ms-font-su']} ${styles['ms-fontWeight-bold']}`}>
-                <span className={`counter-up`} data-value={totalHoras}>{totalHoras}</span> hs
+                <span className={`counter-up`} data-value={this.props.totalHoras}>{this.props.totalHoras}</span> hs
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
                 Ganho de Produtividade Operacional
