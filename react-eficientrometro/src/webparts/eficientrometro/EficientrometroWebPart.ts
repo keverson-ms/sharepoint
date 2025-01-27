@@ -48,6 +48,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
+        year: this.properties.year = (this.properties.year ?? new Date().getFullYear()),
         totalHoras: this.properties.totalHoras = this.getHoras(),
       }
     );
@@ -134,11 +135,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
     }
 
-    if (propertyPath === "year" && newValue !== oldValue) {
-      this.onInit();
-    }
-
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
+    
+    if (propertyPath === "year" && newValue !== oldValue) {
+      return this.properties.year = newValue;
+    }
   }
 
   protected async onInit(): Promise<void> {
@@ -340,7 +341,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                 PropertyPaneDropdown('year', {
                   label: 'Exibir dados do ano de: ',
                   options: this.getYears(),
-                  selectedKey: this.properties.year || new Date().getFullYear(),
+                  selectedKey: this.properties.year,
                 }),
                 PropertyFieldColorPicker('background', {
                   label: 'Cor de Fundo dos valores',
