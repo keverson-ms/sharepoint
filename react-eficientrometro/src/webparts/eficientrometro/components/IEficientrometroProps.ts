@@ -7,4 +7,14 @@ export interface IEficientrometroProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   color: boolean;
+  // totalValor: number;
+  totalHoras: number;
 }
+
+export interface IEficientrometroCollectionDataProps {
+  titulo: string;
+  ano: string | number;
+  horas: number;
+  valor: number;
+}
+

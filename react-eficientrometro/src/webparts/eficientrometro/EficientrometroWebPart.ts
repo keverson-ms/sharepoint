@@ -5,21 +5,29 @@ import {
   type IPropertyPaneConfiguration,
   PropertyPaneTextField,
   PropertyPaneSlider,
-  PropertyPaneToggle
+  PropertyPaneToggle,
+  PropertyPaneDropdown,
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'EficientrometroWebPartStrings';
 import Eficientrometro from './components/Eficientrometro';
-import { IEficientrometroProps } from './components/IEficientrometroProps';
+import { IEficientrometroCollectionDataProps, IEficientrometroProps } from './components/IEficientrometroProps';
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
+import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
+import { TextField } from "office-ui-fabric-react/lib/TextField";
+
 export interface IEficientrometroWebPartProps {
   title: string;
   background: string;
   title_size: number;
   titleAlignCenter: boolean;
   color: boolean;
+  items: IEficientrometroCollectionDataProps[];
+  year: number | string;
+  totalHoras: number;
+  totalValores: number;
 }
 
 export default class EficientrometroWebPart extends BaseClientSideWebPart<IEficientrometroWebPartProps> {
@@ -28,6 +36,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   private _environmentMessage: string = '';
 
   public render(): void {
+
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
       {
@@ -38,7 +47,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        totalHoras: this.properties.totalHoras ?? 0
       }
     );
 
@@ -47,9 +57,29 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
+    this.properties.items = this.properties.items ?? [];
+
     ReactDom.render(element, this.domElement);
 
     this.animateCounterUp();
+  }
+
+  protected async getItems() {
+    const items = this.properties.items?.filter((item: { ano: string | number }) => {
+      return this.properties.year === item.ano;
+    }) ?? [];
+    console.log('items', items);
+
+    this.properties.totalHoras = items.map((item: { horas: number }) => item.horas)
+      .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
+
+    console.log(this.properties.totalHoras);
+
+    this.properties.totalValores = items.map((item: { valor: number }) => item.valor)
+      .reduce((a: string | number, b: string | number) => parseFloat(String(a).replace(/[^\d]/g, "").replace(",", ".")) + parseFloat(String(b).replace(/[^\d]/g, "").replace(",", ".")), 0);
+    console.log(this.properties.totalValores);
+
+    return items;
   }
 
   private animateCounterUp(): void {
@@ -58,7 +88,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     elements.forEach((element: Element) => {
       const text = element.getAttribute("data-value") ?? "0";
 
-      // Conversão de formato brasileiro para americano
       const value = parseFloat(text.replace(/\./g, "").replace(",", "."));
 
       if (!isNaN(value)) {
@@ -66,12 +95,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         const duration = 10000; // Duração da animação em milissegundos
         let startTime: number | null = null;
 
-        let animate = (currentTime: number) => {
+        const animate = (currentTime: number) => {
           if (!startTime) startTime = currentTime;
           const progress = Math.min((currentTime - startTime) / duration, 1);
           const currentValue = startValue + (value - startValue) * progress;
 
-          // Formatar número no formato brasileiro
           const formattedValue = (value % 1 === 0)
             ? Math.ceil(currentValue).toLocaleString("pt-BR")
             : currentValue.toLocaleString("pt-BR", {
@@ -106,11 +134,16 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
     }
 
+    if (propertyPath === "year") {
+      this.getItems();
+    }
+
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
   }
 
   protected async onInit(): Promise<void> {
-    await super.onInit();
+
+    await super.onInit(), this.getItems();
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -191,7 +224,26 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return Version.parse('1.0');
   }
 
+  protected getYears() {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+
+    for (let i = currentYear; i >= 2022; i--) {
+      years.push(i);
+    }
+
+    years.unshift(Number(currentYear.toString()) + 1);
+
+    const yearOptions = years.map(year => ({
+      key: year.toString(),
+      text: year.toString()
+    }));
+
+    return yearOptions;
+  }
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
+
     return {
       pages: [
         {
@@ -201,6 +253,75 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
           groups: [
             {
               groupFields: [
+                PropertyFieldCollectionData("items", {
+                  key: "items",
+                  saveBtnLabel: "Salvar",
+                  cancelBtnLabel: "Cancelar",
+                  saveAndAddBtnLabel: "Salvar e adicionar",
+                  label: "Gerenciar dados",
+                  panelHeader: "Painel de Gerenciamento de Informações",
+                  manageBtnLabel: "Adicionar / Alterar / Remover",
+                  value: this.properties.items,
+                  fields: [
+                    {
+                      id: "titulo",
+                      title: "Título",
+                      type: CustomCollectionFieldType.string,
+                      required: true,
+                    },
+                    {
+                      id: "ano",
+                      title: "Ano de Referência",
+                      type: CustomCollectionFieldType.dropdown,
+                      required: true,
+                      options: this.getYears(),
+                    },
+                    {
+                      id: "horas",
+                      title: "Horas",
+                      type: CustomCollectionFieldType.number,
+                      placeholder: 'Ganho de Produtividade Operacional',
+                      required: true,
+
+                    },
+                    {
+                      id: "valor",
+                      title: "Valor",
+                      type: CustomCollectionFieldType.custom,
+                      placeholder: 'Economia gerada (acumulada)',
+                      required: true,
+                      onCustomRender: (field, value, onUpdate, item, itemId, onError) => {
+                        return React.createElement(TextField, {
+                          key: itemId,
+                          value: value || "",
+                          onChange: (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>, newValue?: string) => {
+
+                            if (newValue) {
+                              const numericValue = newValue.replace(/[^\d]/g, "");
+                              const parsedValue = parseFloat(numericValue);
+
+                              if (parsedValue < 0) {
+                                onError(field.id, "O valor não pode ser negativo");
+                              } else {
+                                onError(field.id, "");
+
+                                const maskedValue = new Intl.NumberFormat("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                }).format(parsedValue / 100);
+
+                                const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
+
+                                onUpdate(field.id, value);
+                              }
+                            }
+                          },
+                        });
+                      },
+                    },
+                  ],
+                  disabled: false,
+                }),
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel
                 }),
@@ -213,6 +334,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                 PropertyPaneToggle('titleAlignCenter', {
                   label: 'Alinhar título ao centro',
                   checked: this.properties.titleAlignCenter
+                }),
+                PropertyPaneDropdown('year', {
+                  label: 'Exibir dados do ano de: ',
+                  options: this.getYears(),
+                  selectedKey: this.properties.year ?? new Date().getFullYear(),
                 }),
                 PropertyFieldColorPicker('background', {
                   label: 'Cor de Fundo dos valores',
