@@ -24,10 +24,10 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
           <div className={styles['ms-Grid-row']}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
               <div className={`${styles.valores} ${styles['ms-font-su']} ${styles['ms-fontWeight-bold']}`}>
-                R$ <span className={`counter-up`} data-value="150.250,33">150.250,33</span>
+                R$ <span className={`counter-up`} data-value={this.props.totalValores}>{this.props.totalValores}</span>
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
-                Economia gerada em <span className={`counter-up`} data-value={parseInt(this.props.year.toString())}>{this.props.year}</span> (acumulada)
+                Economia gerada em <span className={`counter-up`} data-value={this.props.year}>{this.props.year}</span> (acumulada)
               </div>
             </div>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
