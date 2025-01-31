@@ -49,8 +49,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         year: (this.properties.year ?? (new Date().getFullYear().toString())),
+        items: this.properties.items = (this.properties.items ?? []),
         totalHoras: this.getHoras(),
-        totalValores: this.getValores()
+        totalValores: this.getValores(),
       }
     );
 
@@ -61,14 +62,14 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     ReactDom.render(element, this.domElement);
     this.animateCounterUp();
-    console.log(this.getValores());
   }
 
   protected getHoras(): string {
+
     const horas = this.properties.items?.filter((item: { ano: string }) => {
       return this.properties.year === item.ano;
     }).map((item: { horas: number }) => item.horas)
-      .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
+      .reduce((a: number, b: number) => Number(a) + Number(b), 0);
 
     return horas.toString();
   }
@@ -77,9 +78,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const valores = this.properties.items?.filter((item: { ano: string }) => {
       return this.properties.year === item.ano;
     }).map((item: { valor: number }) => item.valor)
-      .reduce((a: number, b: number) => parseFloat(String(a).replace(/[^\d]/g, "")) + parseFloat(String(b).replace(/[^\d]/g, ""))) ?? 0;
+      .reduce((a: number, b: number) => parseFloat(String(a).replace(/[^\d]/g, "")) + parseFloat(String(b).replace(/[^\d]/g, "")), 0);
 
-    return valores.toString();
+    return this.numberFormat(valores.toString());
   }
 
   private animateCounterUp(): void {
@@ -88,44 +89,43 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return elements.forEach((element: Element) => {
       const text = element.getAttribute("data-value") ?? "0";
 
-      const value = parseFloat(text.replace(/\./g, "").replace(",", "."));
+      const value = parseFloat(text.replace(/\./g, "").replace(",", ".").replace('R$', '').replace(/&nbsp;/g, ""));
+
+      element.setAttribute("data-value", text.replace('R$', '').replace(/&nbsp;/g, ""));
 
       if (!isNaN(value)) {
-        const startValue = 0;
-        const duration = 10000; // Duração da animação em milissegundos
-        let startTime: number | null = null;
+        setTimeout(() => {
+          const startValue = 0;
+          const duration = 10000; // Duração da animação em milissegundos
+          let startTime: number | null = null;
 
-        const animate = (currentTime: number) => {
-          if (!startTime) startTime = currentTime;
-          const progress = Math.min((currentTime - startTime) / duration, 1);
-          const currentValue = startValue + (value - startValue) * progress;
+          const animate = (currentTime: number) => {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const currentValue = startValue + (value - startValue) * progress;
 
-          const formattedValue = (value % 1 === 0)
-            ? Math.ceil(currentValue).toLocaleString("pt-BR")
-            : currentValue.toLocaleString("pt-BR", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            });
+            const formattedValue = (value % 1 === 0)
+              ? Math.ceil(currentValue).toLocaleString("pt-BR")
+              : currentValue.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
 
-          element.textContent = formattedValue;
+            element.textContent = formattedValue;
 
-          if (progress < 1) {
-            requestAnimationFrame(animate);
-          }
-        };
-        requestAnimationFrame(animate);
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            }
+          };
+          requestAnimationFrame(animate);
+        }, 1000);
       }
     });
   }
 
   protected async onPropertyChange(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
-
     super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-  }
 
-  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
-
-    console.log(this.properties.background, this.domElement.style);
     if (propertyPath === "background" && newValue !== oldValue) {
       this.domElement.style.setProperty('--background-valores', newValue);
       this.domElement.style.setProperty('--text-valores', this.getContrastColor(`${this.properties.background}`));
@@ -140,12 +140,14 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     }
 
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
+  }
+
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
 
     if (propertyPath === "year" && newValue !== oldValue) {
-      console.log('newValue: ' + newValue, 'oldValue: ' + oldValue);
-
-      // Recalcular os dados com base no novo ano
       this.properties.year = newValue;
+      this.properties.totalHoras = this.getHoras();
+      this.properties.totalValores = this.getValores();
     }
   }
 
@@ -260,7 +262,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const maskedValue = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(parsedValue / 100).replace("R$", "");
+    }).format(parsedValue / 100).replace("R$", "").replace(/&nbsp;/g, "");
 
     const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
 

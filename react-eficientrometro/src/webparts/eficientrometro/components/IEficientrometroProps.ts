@@ -10,6 +10,7 @@ export interface IEficientrometroProps {
   year: string;
   totalValores: string;
   totalHoras: string;
+  items: IEficientrometroCollectionDataProps[] | [];
 }
 
 export interface IEficientrometroCollectionDataProps {
