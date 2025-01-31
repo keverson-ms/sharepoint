@@ -25,7 +25,7 @@ export interface IEficientrometroWebPartProps {
   titleAlignCenter: boolean;
   color: boolean;
   items: IEficientrometroCollectionDataProps[] | [];
-  year: number;
+  year: string;
   totalHoras: string;
   totalValores: string;
 }
@@ -88,7 +88,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   private animateCounterUp(): void {
     const elements = this.domElement.querySelectorAll(".counter-up");
 
-    elements.forEach((element: Element) => {
+    return elements.forEach((element: Element) => {
       const text = element.getAttribute("data-value") ?? "0";
 
       const value = parseFloat(text.replace(/\./g, "").replace(",", "."));
@@ -122,7 +122,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     });
   }
 
-  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
 
     if (propertyPath === "background" && newValue !== oldValue) {
       this.domElement.style.setProperty('--background-valores', newValue);
@@ -233,7 +233,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return Version.parse('1.0');
   }
 
-  protected getYears() {
+
+  protected getYears(): { key: string, text: string }[] {
     const currentYear = new Date().getFullYear();
     const years = [];
 
@@ -251,14 +252,13 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return yearOptions;
   }
 
-
-  protected numberFormat(money: string = '0') {
+  protected numberFormat(money: string = '0'): string {
 
     const numericValue = money.replace(/[^\d]/g, "");
 
     const parsedValue = parseFloat(numericValue);
 
-    let maskedValue = new Intl.NumberFormat("pt-BR", {
+    const maskedValue = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
     }).format(parsedValue / 100).replace("R$", "");

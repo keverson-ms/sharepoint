@@ -7,7 +7,7 @@ export interface IEficientrometroProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   color: boolean;
-  year: number;
+  year: string;
   totalValores: string;
   totalHoras: string;
 }
