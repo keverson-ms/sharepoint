@@ -88,11 +88,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const elements = this.domElement.querySelectorAll(".counter-up");
 
     return elements.forEach((element: Element) => {
-      const text = element.getAttribute("data-value") ?? "0";
-
-      const value = parseFloat(text.replace(/\./g, "").replace(",", ".").replace('R$', '').replace(/&nbsp;/g, ""));
-
-      element.setAttribute("data-value", text.replace('R$', '').replace(/&nbsp;/g, ""));
+      const text = element.getAttribute("data-value")?.replace('R$', '').replace(/&nbsp;/g, "") ?? element.setAttribute('data-value', `${element.textContent}`);
+      
+      const value = parseFloat(`${text}`);
 
       if (!isNaN(value)) {
         setTimeout(() => {
@@ -260,10 +258,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     const parsedValue = parseFloat(numericValue);
 
-    const maskedValue = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(parsedValue / 100).replace("R$", "").replace(/&nbsp;/g, "");
+    const maskedValue = new Intl.NumberFormat("pt-BR").format(parsedValue / 100).replace("R$", "").replace(/&nbsp;/g, "");
 
     const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
 
