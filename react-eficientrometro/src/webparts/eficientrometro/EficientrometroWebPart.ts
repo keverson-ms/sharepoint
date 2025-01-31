@@ -48,9 +48,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
-        totalHoras: this.getHoras().toString() ?? 0,
-        totalValores: this.numberFormat(this.getValores().toString()) ?? 0,
+        year: (this.properties.year ?? (new Date().getFullYear().toString())),
+        totalHoras: this.getHoras(),
+        totalValores: this.getValores()
       }
     );
 
@@ -61,28 +61,25 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     ReactDom.render(element, this.domElement);
     this.animateCounterUp();
+    console.log(this.getValores());
   }
 
-  protected getItems(): IEficientrometroCollectionDataProps[] {
-    const items = this.properties.items?.filter((item: { ano: string }) => {
+  protected getHoras(): string {
+    const horas = this.properties.items?.filter((item: { ano: string }) => {
       return this.properties.year === item.ano;
-    }) ?? [];
-
-    return items;
-  }
-
-  protected getHoras(): number {
-    const horas = this.getItems().map((item: { horas: number }) => item.horas)
+    }).map((item: { horas: number }) => item.horas)
       .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
 
-    return horas;
+    return horas.toString();
   }
 
-  protected getValores(): number {
-    const valores = this.getItems().map((item: { valor: number }) => item.valor)
-      .reduce((a: string | number, b: string | number) => parseFloat(String(a).replace(/[^\d]/g, "")) + parseFloat(String(b).replace(/[^\d]/g, "")), 0);
+  protected getValores(): string {
+    const valores = this.properties.items?.filter((item: { ano: string }) => {
+      return this.properties.year === item.ano;
+    }).map((item: { valor: number }) => item.valor)
+      .reduce((a: number, b: number) => parseFloat(String(a).replace(/[^\d]/g, "")) + parseFloat(String(b).replace(/[^\d]/g, ""))) ?? 0;
 
-    return valores;
+    return valores.toString();
   }
 
   private animateCounterUp(): void {
@@ -113,20 +110,20 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
           element.textContent = formattedValue;
 
           if (progress < 1) {
-            return requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
           }
         };
-
-        return requestAnimationFrame(animate);
+        requestAnimationFrame(animate);
       }
     });
   }
 
   protected async onPropertyChange(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
 
-    if (this.properties.year) {
-      super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-    }
+    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+  }
+
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
 
     console.log(this.properties.background, this.domElement.style);
     if (propertyPath === "background" && newValue !== oldValue) {
@@ -149,8 +146,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
       // Recalcular os dados com base no novo ano
       this.properties.year = newValue;
-      this.properties.totalHoras = `${this.getHoras()}`;
-      this.properties.totalValores = this.numberFormat(`${this.getValores()}`);
     }
   }
 
@@ -246,7 +241,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       years.push(i);
     }
 
-    years.unshift(Number(currentYear.toString()) + 1);
+    years.unshift(currentYear + 1);
 
     const yearOptions = years.map(year => ({
       key: year.toString(),

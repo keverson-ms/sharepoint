@@ -15,7 +15,7 @@ export interface IEficientrometroProps {
 export interface IEficientrometroCollectionDataProps {
   titulo: string;
   ano: string;
-  horas: number;
   valor: number;
+  horas: number;
 }
 
