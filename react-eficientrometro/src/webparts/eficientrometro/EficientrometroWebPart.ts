@@ -37,6 +37,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
   public render(): void {
 
+    this.animateCounterUp();
+
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
       {
@@ -61,7 +63,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
     ReactDom.render(element, this.domElement);
-    this.animateCounterUp();
   }
 
   protected getHoras(): string {
