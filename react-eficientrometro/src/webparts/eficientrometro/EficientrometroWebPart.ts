@@ -64,8 +64,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   }
 
   protected getItems(): IEficientrometroCollectionDataProps[] {
-    const items = this.properties.items?.filter((item: { ano: number }) => {
-      return Number(this.properties.year) === Number(item.ano);
+    const items = this.properties.items?.filter((item: { ano: string }) => {
+      return this.properties.year === item.ano;
     }) ?? [];
 
     return items;
@@ -113,17 +113,22 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
           element.textContent = formattedValue;
 
           if (progress < 1) {
-            requestAnimationFrame(animate);
+            return requestAnimationFrame(animate);
           }
         };
 
-        requestAnimationFrame(animate);
+        return requestAnimationFrame(animate);
       }
     });
   }
 
-  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
+  protected async onPropertyChange(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
 
+    if (this.properties.year) {
+      super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    }
+
+    console.log(this.properties.background, this.domElement.style);
     if (propertyPath === "background" && newValue !== oldValue) {
       this.domElement.style.setProperty('--background-valores', newValue);
       this.domElement.style.setProperty('--text-valores', this.getContrastColor(`${this.properties.background}`));
@@ -140,13 +145,12 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
 
     if (propertyPath === "year" && newValue !== oldValue) {
+      console.log('newValue: ' + newValue, 'oldValue: ' + oldValue);
 
       // Recalcular os dados com base no novo ano
+      this.properties.year = newValue;
       this.properties.totalHoras = `${this.getHoras()}`;
       this.properties.totalValores = this.numberFormat(`${this.getValores()}`);
-      this.properties.year = newValue;
-
-      this.render();
     }
   }
 
