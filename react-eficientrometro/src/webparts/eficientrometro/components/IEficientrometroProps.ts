@@ -8,8 +8,8 @@ export interface IEficientrometroProps {
   userDisplayName: string;
   color: boolean;
   year: number;
-  totalValores: number;
-  totalHoras: number;
+  totalValores: string;
+  totalHoras: string;
 }
 
 export interface IEficientrometroCollectionDataProps {

@@ -26,8 +26,8 @@ export interface IEficientrometroWebPartProps {
   color: boolean;
   items: IEficientrometroCollectionDataProps[] | [];
   year: number;
-  totalHoras: number;
-  totalValores: number;
+  totalHoras: string;
+  totalValores: string;
 }
 
 export default class EficientrometroWebPart extends BaseClientSideWebPart<IEficientrometroWebPartProps> {
@@ -49,8 +49,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
-        totalHoras: this.properties.totalHoras,
-        totalValores: this.properties.totalValores,
+        totalHoras: this.getHoras().toString() ?? 0,
+        totalValores: this.numberFormat(this.getValores().toString()) ?? 0,
       }
     );
 
@@ -75,14 +75,14 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const horas = this.getItems().map((item: { horas: number }) => item.horas)
       .reduce((a: number, b: number) => Number(a) + Number(b), 0) ?? 0;
 
-    return this.properties.totalHoras = horas;
+    return horas;
   }
 
   protected getValores(): number {
     const valores = this.getItems().map((item: { valor: number }) => item.valor)
-      .reduce((a: string | number, b: string | number) => parseFloat(String(a).replace(/[^\d]/g, "").replace(",", ".")) + parseFloat(String(b).replace(/[^\d]/g, "").replace(",", ".")), 0);
+      .reduce((a: string | number, b: string | number) => parseFloat(String(a).replace(/[^\d]/g, "")) + parseFloat(String(b).replace(/[^\d]/g, "")), 0);
 
-    return this.properties.totalValores = valores;
+    return valores;
   }
 
   private animateCounterUp(): void {
@@ -140,11 +140,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
 
     if (propertyPath === "year" && newValue !== oldValue) {
-      this.properties.year = newValue;
 
       // Recalcular os dados com base no novo ano
-      this.properties.totalHoras = this.getHoras();
-      this.properties.totalValores = this.getValores();
+      this.properties.totalHoras = `${this.getHoras()}`;
+      this.properties.totalValores = this.numberFormat(`${this.getValores()}`);
+      this.properties.year = newValue;
 
       this.render();
     }
@@ -251,6 +251,23 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return yearOptions;
   }
 
+
+  protected numberFormat(money: string = '0') {
+
+    const numericValue = money.replace(/[^\d]/g, "");
+
+    const parsedValue = parseFloat(numericValue);
+
+    let maskedValue = new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(parsedValue / 100).replace("R$", "");
+
+    const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
+
+    return value;
+  }
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
 
     return {
@@ -314,12 +331,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                               } else {
                                 onError(field.id, "");
 
-                                const maskedValue = new Intl.NumberFormat("pt-BR", {
-                                  style: "currency",
-                                  currency: "BRL",
-                                }).format(parsedValue / 100);
-
-                                const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
+                                const value = this.numberFormat(newValue);
 
                                 onUpdate(field.id, value);
                               }
@@ -348,16 +360,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                   label: 'Exibir dados do ano de: ',
                   options: this.getYears(),
                   selectedKey: this.properties.year,
-                }),
-                PropertyPaneTextField('totalHoras', {
-                  label: 'Total de Horas',
-                  value: `${this.getHoras()}`,
-                  disabled: true
-                }),
-                PropertyPaneTextField('totalValores', {
-                  label: 'Total de Valores',
-                  value: `${this.getValores()}`,
-                  disabled: true
                 }),
                 PropertyFieldColorPicker('background', {
                   label: 'Cor de Fundo dos valores',
