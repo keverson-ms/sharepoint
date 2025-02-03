@@ -6,7 +6,7 @@ import {
   PropertyPaneDropdown,
   PropertyPaneTextField,
   PropertyPaneToggle,
-  PropertyPaneSlider
+  PropertyPaneSlider,
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -29,8 +29,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
-  private _groupOptions: { key: string; text: string }[] = [];
-  // private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
+  private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
 
   public render(): void {
 

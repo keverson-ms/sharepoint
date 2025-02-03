@@ -2,8 +2,13 @@ import * as React from 'react';
 import styles from './BirthdaysMonth.module.scss';
 import type { IBirthdaysMembersItem, IBirthdaysMonthProps } from './IBirthdaysMonthProps';
 // import { escape } from '@microsoft/sp-lodash-subset';
-import { ActivityItem, Link, PersonaSize } from '@fluentui/react';
+// import { ActivityItem, Link, PersonaSize } from '@fluentui/react';
 import { TestImages } from '@fluentui/example-data';
+import {
+  Persona,
+  PersonaInitialsColor,
+  PersonaSize,
+} from 'office-ui-fabric-react/lib/Persona';
 
 export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps> {
 
@@ -24,30 +29,28 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
             <hr />
           </>
         )}
+
         <div className={styles.overflow} style={{ maxHeight: `${this.props.overflow}px` }}>
           {this.props.members && this.props.members.length > 0 ? (
-            this.props.members.map((member: IBirthdaysMembersItem, index: number) => (
-              <ActivityItem
-                key={index}
-                activityDescription={[
-                  <Link key={`${index}-displayName`} className={styles.fontWeightBold} href={`mailto:${member.mail}?subject=Feliz Aniversário!&body=${member.givenName} ${member.surname}`}>
-                    {member.displayName}
-                  </Link>,
-                  <span key={1}> - </span>,
-                  <small key={2} className={`${styles.fontWeightBold}`}>{member.dateBirthExtension}</small>
-                ]}
-                activityPersonas={[
-                  {
-                    imageUrl: `${absoluteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${member.mail}` || TestImages.personaMale,
-                    size: PersonaSize.size120
-                  }
-                ]}
-                comments={[
-                  member.jobTitle + ' - ',
-                  <Link key={`{${index}-mail}`} href={`mailto:${member.mail}?subject=Feliz Aniversário!&body=${member.givenName} ${member.surname}`}> {member.mail} </Link>
-                ]}
-                className={`${styles.root}`}
-              />
+            this.props.members.map((member: IBirthdaysMembersItem, key: number) => (
+              <div>
+                <Persona
+                  key={key}
+                  className={styles.my1}
+                  imageShouldFadeIn={true}
+                  size={PersonaSize.size72}
+                  text={member.displayName}
+                  secondaryText={member.jobTitle}
+                  tertiaryText={member.dateBirthExtension}
+                  imageUrl={`${absoluteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${member.mail}` || TestImages.personaMale}
+                  initialsColor={PersonaInitialsColor.gold}
+                  styles={{
+                    primaryText: [styles.fontWeightBold, styles.colorTheme, styles.fontSize1rem],
+                    secondaryText: [styles.fontWeight600],
+                    tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
+                  }}
+                />
+              </div>
             ))
           ) : (
             this.props.group ? 'Selecione um grupo para listar os aniversariantes' : 'Nenhum aniversariante encontrado'
