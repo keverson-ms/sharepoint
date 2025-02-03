@@ -50,7 +50,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        year: (this.properties.year ?? (new Date().getFullYear().toString())),
+        year: (this.properties.year ?? new Date().getFullYear().toString()),
         items: this.properties.items = (this.properties.items ?? []),
         totalHoras: this.getHoras(),
         totalValores: this.getValores(),
@@ -62,6 +62,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
+    console.log(this.properties.year, typeof this.properties.year, (new Date().getFullYear().toString()), typeof new Date().getFullYear().toString());
     ReactDom.render(element, this.domElement);
   }
 
@@ -88,8 +89,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const elements = this.domElement.querySelectorAll(".counter-up");
 
     return elements.forEach((element: Element) => {
-      const text = element.getAttribute("data-value")?.replace('R$', '').replace(/&nbsp;/g, "") ?? element.setAttribute('data-value', `${element.textContent}`);
-      
+      const text = element.setAttribute('data-value', `${element.textContent}`);
+
       const value = parseFloat(`${text}`);
 
       if (!isNaN(value)) {
