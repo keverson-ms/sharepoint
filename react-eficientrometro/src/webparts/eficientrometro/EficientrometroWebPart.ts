@@ -37,8 +37,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
   public render(): void {
 
-    this.animateCounterUp();
-
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
       {
@@ -50,7 +48,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        year: (this.properties.year ?? new Date().getFullYear().toString()),
+        year: (this.properties.year ?? (new Date().getFullYear().toString())),
         items: this.properties.items = (this.properties.items ?? []),
         totalHoras: this.getHoras(),
         totalValores: this.getValores(),
@@ -62,8 +60,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
-    console.log(this.properties.year, typeof this.properties.year, (new Date().getFullYear().toString()), typeof new Date().getFullYear().toString());
     ReactDom.render(element, this.domElement);
+
+    this.animateCounterUp();
   }
 
   protected getHoras(): string {
@@ -73,52 +72,55 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     }).map((item: { horas: number }) => item.horas)
       .reduce((a: number, b: number) => Number(a) + Number(b), 0);
 
-    return horas.toString();
+    return this.properties.totalHoras = horas.toString();
   }
 
   protected getValores(): string {
     const valores = this.properties.items?.filter((item: { ano: string }) => {
       return this.properties.year === item.ano;
     }).map((item: { valor: number }) => item.valor)
-      .reduce((a: number, b: number) => parseFloat(String(a).replace(/[^\d]/g, "")) + parseFloat(String(b).replace(/[^\d]/g, "")), 0);
+      .reduce((a: number, b: number) => a + b, 0);
 
-    return this.numberFormat(valores.toString());
+    console.log('ano selecionado: ', this.properties.year, 'valores: ', this.numberFormat(valores.toString()));
+    return this.properties.totalValores = this.numberFormat(valores.toString());
   }
 
   private animateCounterUp(): void {
     const elements = this.domElement.querySelectorAll(".counter-up");
 
     return elements.forEach((element: Element) => {
-      const text = element.setAttribute('data-value', `${element.textContent}`);
-
-      const value = parseFloat(`${text}`);
-
+      const text = element.getAttribute("data-value") ?? `${element.textContent}`;
+      const value = parseFloat(text.toString());
+      console.log('text: ', text, 'value: ', value);
       if (!isNaN(value)) {
-        setTimeout(() => {
-          const startValue = 0;
-          const duration = 10000; // Duração da animação em milissegundos
-          let startTime: number | null = null;
+        const startValue = 0;
+        const duration = 10000; // Duração da animação em milissegundos
+        let startTime: number | null = null;
 
-          const animate = (currentTime: number) => {
-            if (!startTime) startTime = currentTime;
-            const progress = Math.min((currentTime - startTime) / duration, 1);
-            const currentValue = startValue + (value - startValue) * progress;
+        const animate = (currentTime: number) => {
+          if (!startTime) {
+            startTime = currentTime;
+          }
 
-            const formattedValue = (value % 1 === 0)
-              ? Math.ceil(currentValue).toLocaleString("pt-BR")
-              : currentValue.toLocaleString("pt-BR", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              });
+          const progress = Math.min((currentTime - startTime) / duration, 1);
+          const currentValue = startValue + (value - startValue) * progress;
 
-            element.textContent = formattedValue;
+          const formattedValue = (value % 1 === 0)
+            ? Math.ceil(currentValue).toLocaleString("pt-BR")
+            : currentValue.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            });
 
-            if (progress < 1) {
-              requestAnimationFrame(animate);
-            }
-          };
-          requestAnimationFrame(animate);
-        }, 1000);
+          console.log('formattedValue: ', formattedValue);
+
+          element.textContent = formattedValue;
+
+          if (progress < 1) {
+            return requestAnimationFrame(animate);
+          }
+        };
+        return requestAnimationFrame(animate);
       }
     });
   }
@@ -253,17 +255,16 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return yearOptions;
   }
 
-  protected numberFormat(money: string = '0'): string {
-
+  protected numberFormat(money: string): string {
     const numericValue = money.replace(/[^\d]/g, "");
 
     const parsedValue = parseFloat(numericValue);
 
-    const maskedValue = new Intl.NumberFormat("pt-BR").format(parsedValue / 100).replace("R$", "").replace(/&nbsp;/g, "");
+    const maskedValue = new Intl.NumberFormat("pt-BR").format(parsedValue / 100).replace("R$", "").replace(/&nbsp;/g, "").replace(/&nbsp;/g, "").replace(".", "").replace(",", ".");
 
     const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
 
-    return value;
+    return value.replace('R$', '').replace(/&nbsp;/g, "");
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
@@ -329,7 +330,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                               } else {
                                 onError(field.id, "");
 
-                                const value = this.numberFormat(newValue);
+                                const maskedValue = new Intl.NumberFormat("pt-BR", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                }).format(parsedValue / 100);
+                                const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
 
                                 onUpdate(field.id, value);
                               }
