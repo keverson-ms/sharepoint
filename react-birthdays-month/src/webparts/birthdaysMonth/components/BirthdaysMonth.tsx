@@ -30,27 +30,29 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
           </>
         )}
 
-        <div className={styles.overflow} style={{ maxHeight: `${this.props.overflow}px` }}>
+        <div className={styles.overflow}>
           {this.props.members && this.props.members.length > 0 ? (
             this.props.members.map((member: IBirthdaysMembersItem, key: number) => (
-              <div>
-                <Persona
-                  key={key}
-                  className={styles.my1}
-                  imageShouldFadeIn={true}
-                  size={PersonaSize.size72}
-                  text={member.displayName}
-                  secondaryText={member.jobTitle}
-                  tertiaryText={member.dateBirthExtension}
-                  imageUrl={`${absoluteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${member.mail}` || TestImages.personaMale}
-                  initialsColor={PersonaInitialsColor.gold}
-                  styles={{
-                    primaryText: [styles.fontWeightBold, styles.colorTheme, styles.fontSize1rem],
-                    secondaryText: [styles.fontWeight600],
-                    tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
-                  }}
-                />
-              </div>
+              <>
+                <div>
+                  <Persona
+                    key={key}
+                    className={styles.my1}
+                    imageShouldFadeIn={true}
+                    size={PersonaSize.size72}
+                    text={member.displayName}
+                    secondaryText={member.jobTitle}
+                    tertiaryText={member.dateBirthExtension}
+                    imageUrl={`${absoluteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${member.mail}` || TestImages.personaMale}
+                    initialsColor={PersonaInitialsColor.gold}
+                    styles={{
+                      primaryText: [styles.fontWeightBold, styles.colorTheme, styles.fontSize1rem],
+                      secondaryText: [styles.fontWeight600],
+                      tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
+                    }}
+                  />
+                </div>
+              </>
             ))
           ) : (
             this.props.group ? 'Selecione um grupo para listar os aniversariantes' : 'Nenhum aniversariante encontrado'

@@ -44,7 +44,6 @@
     color: var(--link); // note: CSS Custom Properties support is limited to modern browsers only
 
     &:hover {
-      text-decoration: underline;
       color: "[theme:linkHovered, default: #014446]";
       color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
     }
@@ -69,6 +68,8 @@
 
 .overflow {
   overflow: 'overlay';
+  max-height: var(--overflow);
+  min-height: 25px;
 }
 
 .my1 {

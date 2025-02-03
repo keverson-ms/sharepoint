@@ -30,6 +30,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
+  private defaultOverflow = 500;
 
   public render(): void {
 
@@ -50,9 +51,11 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         members: this.properties.members ?? [],
         group: this.properties.group ?? [],
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
-        overflow: this.properties.overflow ?? 0
+        overflow: this.properties.overflow ?? this.defaultOverflow
       }
     );
+
+    this.domElement.style.setProperty('--overflow', `${this.properties.overflow ?? this.defaultOverflow}px`);
 
     ReactDom.render(element, this.domElement);
   }
@@ -156,7 +159,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                 }),
                 PropertyPaneSlider('overflow', {
                   label: 'Barra de Rolagem',
-                  min: 300,
+                  min: this.defaultOverflow,
                   max: 1000,
                   value: this.properties.overflow,
                   disabled: this.properties.group ? false : true
@@ -172,6 +175,10 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
     if (this.properties.group) {
       super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    }
+
+    if (propertyPath === "overflow" && newValue !== oldValue) {
+      this.domElement.style.setProperty('--overflow', `${this.properties.overflow ?? 0}px`);
     }
 
     if (this.properties.group && propertyPath === 'group' && newValue !== oldValue) {
@@ -253,25 +260,24 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         const currentMonth = new Date().getMonth();
 
         return birthDate.getMonth() === currentMonth;
-      })
-        .sort((a: { officeLocation: string }, b: { officeLocation: string }) => {
-          const dateA = new Date(a.officeLocation).getDate();
-          const dateB = new Date(b.officeLocation).getDate();
-          return dateA - dateB;
-        }).map((member: IBirthdaysMembersItem) => (member ? {
-          displayName: member.displayName,
-          givenName: member.givenName,
-          id: member.id,
-          jobTitle: member.jobTitle,
-          mail: member.mail,
-          mobilePhone: member.mobilePhone,
-          officeLocation: member.officeLocation,
-          dateBirth: isValidDate(member.officeLocation) ? member.officeLocation : null,
-          dateBirthExtension: isValidDate(member.officeLocation) ? formatDateToPortuguese(member.officeLocation) : null,
-          preferredLanguage: member.preferredLanguage,
-          surname: member.surname,
-          userPrincipalName: member.userPrincipalName
-        } : null));
+      }).sort((a: { officeLocation: string }, b: { officeLocation: string }) => {
+        const dateA = new Date(a.officeLocation).getDate();
+        const dateB = new Date(b.officeLocation).getDate();
+        return dateA - dateB;
+      }).map((member: IBirthdaysMembersItem) => (member ? {
+        displayName: member.displayName,
+        givenName: member.givenName,
+        id: member.id,
+        jobTitle: member.jobTitle,
+        mail: member.mail,
+        mobilePhone: member.mobilePhone,
+        officeLocation: member.officeLocation,
+        dateBirth: isValidDate(member.officeLocation) ? member.officeLocation : null,
+        dateBirthExtension: isValidDate(member.officeLocation) ? formatDateToPortuguese(member.officeLocation) : null,
+        preferredLanguage: member.preferredLanguage,
+        surname: member.surname,
+        userPrincipalName: member.userPrincipalName
+      } : null));
 
       return members;
     }
