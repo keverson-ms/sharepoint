@@ -1,4 +1,8 @@
 @import '~@fluentui/react/dist/sass/References.scss';
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/FabricCore.global.scss';
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
+@import '~@microsoft/sp-office-ui-fabric-core/dist/sass/ThemeOverrides.global.scss';
+@import '~office-ui-fabric-core/dist/sass/References.scss';
 
 .birthdaysMonth {
   overflow: hidden;
@@ -76,6 +80,10 @@
   margin: 0.5rem 0;
 }
 
+.my2 {
+  margin: 1rem 0;
+}
+
 .colorTheme {
   color: "[theme:link, default:#03787c]";
   font-weight: bold;
@@ -115,5 +123,28 @@
 
   100% {
     transform: scale(1.1);
+  }
+}
+
+.dflex {
+  display: flex;
+}
+
+.alignItemsCenter {
+  align-items: center;
+}
+
+.justifyContentSpaceBetween {
+  justify-content: space-between;
+}
+
+.bgTeams {
+  color: "[theme:link, default:#03787c]";
+  font-weight: bold;
+  border: 1px solid var(--link);
+
+  &:hover {
+    color: "[theme:linkHovered, default: #014446]";
+    color: var(--linkHovered); // note: CSS Custom Properties support is limited to modern browsers only
   }
 }

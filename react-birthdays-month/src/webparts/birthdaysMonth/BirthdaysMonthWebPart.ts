@@ -49,7 +49,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         members: this.properties.members ?? [],
-        group: this.properties.group ?? [],
+        group: this.properties.group,
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
         overflow: this.properties.overflow ?? this.defaultOverflow
       }

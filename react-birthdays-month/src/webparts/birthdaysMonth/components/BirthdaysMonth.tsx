@@ -10,15 +10,13 @@ import {
   PersonaSize,
 } from 'office-ui-fabric-react/lib/Persona';
 
+import { PopupModal } from './PopupModal';
 export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps> {
 
   public render(): React.ReactElement<IBirthdaysMonthProps> {
     const {
       absoluteUrl,
-      // isDarkTheme,
-      // environmentMessage,
       hasTeamsContext,
-      // userDisplayName
     } = this.props;
 
     return (
@@ -34,7 +32,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
           {this.props.members && this.props.members.length > 0 ? (
             this.props.members.map((member: IBirthdaysMembersItem, key: number) => (
               <>
-                <div>
+                <div className={`${styles.dflex} ${styles.alignItemsCenter} ${styles.justifyContentSpaceBetween}`}>
                   <Persona
                     key={key}
                     className={styles.my1}
@@ -51,6 +49,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
                       tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
                     }}
                   />
+                  <PopupModal member={member} />
                 </div>
               </>
             ))
