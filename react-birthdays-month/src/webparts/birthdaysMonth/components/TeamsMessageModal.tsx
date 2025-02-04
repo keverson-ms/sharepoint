@@ -3,6 +3,7 @@ import { mergeStyleSets, DefaultButton, FocusTrapZone, Layer, Overlay, Popup } f
 import { useBoolean } from '@fluentui/react-hooks';
 import styles from './BirthdaysMonth.module.scss';
 import { IBirthdaysMembersItem } from './IBirthdaysMonthProps';
+import { ITeamsMessageModalProps } from './ITeamsMessageModalProps';
 
 const popupStyles = mergeStyleSets({
   root: {
@@ -25,7 +26,7 @@ const popupStyles = mergeStyleSets({
   },
 });
 
-export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem }> = ({ member }) => {
+export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: ITeamsMessageModalProps }> = ({ member, props }) => {
 
   const [isPopupVisible, { setTrue: showPopup, setFalse: hidePopup }] = useBoolean(false);
 
@@ -33,7 +34,7 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
 
   const handleSendMessage = () => {
     // Aqui você pode adicionar o código para enviar a mensagem via Teams, por exemplo
-    console.log('Mensagem enviada:', message);
+    console.log('Mensagem enviada:', message, props);
     hidePopup(); // Fechar o modal após o envio
   };
 

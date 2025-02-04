@@ -14,7 +14,8 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import * as strings from 'BirthdaysMonthWebPartStrings';
 import BirthdaysMonth from './components/BirthdaysMonth';
 import { IBirthdaysMonthProps, IBirthdaysMembersItem, IBirthdaysMembersGroupsItem } from './components/IBirthdaysMonthProps';
-import { AadHttpClient, HttpClientResponse } from '@microsoft/sp-http';
+import { ITeamsMessageModalProps } from './components/ITeamsMessageModalProps';
+import MsGraphProvider from '../services/msGraphProvider';
 
 export interface IBirthdaysMonthWebPartProps {
   title: string;
@@ -23,6 +24,7 @@ export interface IBirthdaysMonthWebPartProps {
   members: IBirthdaysMembersItem[];
   absoluteUrl: string;
   overflow: number;
+  webPartContext: ITeamsMessageModalProps
 }
 
 export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthdaysMonthWebPartProps> {
@@ -31,6 +33,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _environmentMessage: string = '';
   private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
   private defaultOverflow = 500;
+  private msGraphProvider: MsGraphProvider = new MsGraphProvider(this.context);
 
   public render(): void {
 
@@ -51,7 +54,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         members: this.properties.members ?? [],
         group: this.properties.group,
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
-        overflow: this.properties.overflow ?? this.defaultOverflow
+        overflow: this.properties.overflow ?? this.defaultOverflow,
+        webPartContext: this.properties.webPartContext
       }
     );
 
@@ -63,7 +67,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   protected async onInit(): Promise<void> {
     await super.onInit();
 
-    this._groupOptions = await this._fetchGroups();
+    this._groupOptions = await this.msGraphProvider._fetchGroups(this.context);
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -183,106 +187,9 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     if (this.properties.group && propertyPath === 'group' && newValue !== oldValue) {
       this.properties.group = `${newValue}`;
-      this.properties.members = await this._fetchGroupMembers(newValue);
+      this.properties.members = await this.msGraphProvider._fetchGroupMembers(newValue, this.context);
       this.render();
     }
-  }
-
-
-  private async _getAadHttpClient(): Promise<AadHttpClient> {
-    return this.context.aadHttpClientFactory.getClient('https://graph.microsoft.com');
-  }
-
-  private async _fetchGroups(): Promise<IBirthdaysMembersGroupsItem[]> {
-    const client = await this._getAadHttpClient();
-
-    const response: HttpClientResponse = await client.get(
-      "https://graph.microsoft.com/v1.0/groups?$select=id,displayName,description&$filter=((NOT groupTypes/any(c:c eq 'Unified')) and (mailEnabled eq true) and (securityEnabled eq true) and (description%20ne%20null))&$count=true&$top=999",
-      AadHttpClient.configurations.v1,
-      {
-        headers: {
-          'ConsistencyLevel': 'eventual'
-        }
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar grupos: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    const groups = data.value.map((group: { id: string; description: string; }) => ({
-      key: group.id,
-      text: (`${group.description}`).toUpperCase()
-    }));
-
-    return groups;
-  }
-
-  private async _fetchGroupMembers(groupId: string): Promise<IBirthdaysMembersItem[]> {
-
-    if (groupId) {
-      const client = await this._getAadHttpClient();
-
-      const response: HttpClientResponse = await client.get(
-        `https://graph.microsoft.com/v1.0/groups/${groupId}/members?$count=true&$filter=(accountEnabled eq true)&$top=999`,
-        AadHttpClient.configurations.v1,
-        {
-          headers: {
-            'ConsistencyLevel': 'eventual'
-          }
-        }
-      );
-
-      const data = await response.json();
-
-      const isValidDate = (dateStr: string): boolean => {
-        const date = new Date(dateStr);
-        return !isNaN(date.getTime());
-      };
-
-      const formatDateToPortuguese = (dateStr: string): string | null => {
-        if (!isValidDate(dateStr)) return null;
-
-        const date = new Date(dateStr);
-
-        return new Intl.DateTimeFormat('pt-BR', {
-          month: 'long',
-          day: 'numeric'
-        }).format(date).replace(/^\w/, (c) => c.toUpperCase());
-      };
-
-      const members = data.value.filter((member: { officeLocation: string }) => {
-        if (!isValidDate(member.officeLocation)) return false;
-
-        const birthDate = new Date(member.officeLocation);
-        const currentMonth = new Date().getMonth();
-
-        return birthDate.getMonth() === currentMonth;
-      }).sort((a: { officeLocation: string }, b: { officeLocation: string }) => {
-        const dateA = new Date(a.officeLocation).getDate();
-        const dateB = new Date(b.officeLocation).getDate();
-        return dateA - dateB;
-      }).map((member: IBirthdaysMembersItem) => (member ? {
-        displayName: member.displayName,
-        givenName: member.givenName,
-        id: member.id,
-        jobTitle: member.jobTitle,
-        mail: member.mail,
-        mobilePhone: member.mobilePhone,
-        officeLocation: member.officeLocation,
-        dateBirth: isValidDate(member.officeLocation) ? member.officeLocation : null,
-        dateBirthExtension: isValidDate(member.officeLocation) ? formatDateToPortuguese(member.officeLocation) : null,
-        preferredLanguage: member.preferredLanguage,
-        surname: member.surname,
-        userPrincipalName: member.userPrincipalName
-      } : null));
-
-      return members;
-    }
-
-    return [];
   }
 
 }

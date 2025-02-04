@@ -1,8 +1,6 @@
 import * as React from 'react';
 import styles from './BirthdaysMonth.module.scss';
 import type { IBirthdaysMembersItem, IBirthdaysMonthProps } from './IBirthdaysMonthProps';
-// import { escape } from '@microsoft/sp-lodash-subset';
-// import { ActivityItem, Link, PersonaSize } from '@fluentui/react';
 import { TestImages } from '@fluentui/example-data';
 import {
   Persona,
@@ -17,6 +15,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
     const {
       absoluteUrl,
       hasTeamsContext,
+      webPartContext
     } = this.props;
 
     return (
@@ -49,7 +48,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
                       tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
                     }}
                   />
-                  <TeamsMessageModal member={member} />
+                  <TeamsMessageModal member={member} props={webPartContext} />
                 </div>
               </>
             ))

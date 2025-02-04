@@ -1,3 +1,5 @@
+import { ITeamsMessageModalProps } from "./ITeamsMessageModalProps";
+
 export interface IBirthdaysMonthProps {
   title: string;
   isDarkTheme: boolean;
@@ -8,6 +10,7 @@ export interface IBirthdaysMonthProps {
   group: string;
   absoluteUrl: string;
   overflow: number;
+  webPartContext: ITeamsMessageModalProps
 }
 
 export interface IBirthdaysMembersItem {
