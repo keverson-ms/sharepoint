@@ -16,17 +16,26 @@ const popupStyles = mergeStyleSets({
   content: {
     background: 'white',
     left: '50%',
-    maxWidth: '400px',
-    padding: '0 2em 2em',
+    width: '35%',
+    maxWidth: '35%',
+    padding: '2em 2em',
     position: 'absolute',
     top: '50%',
     transform: 'translate(-50%, -50%)',
   },
 });
 
-export const PopupModal: React.FunctionComponent<{ member: IBirthdaysMembersItem }> = ({ member }) => {
-  console.log(member.displayName.split(' - ').shift());
+export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem }> = ({ member }) => {
+
   const [isPopupVisible, { setTrue: showPopup, setFalse: hidePopup }] = useBoolean(false);
+
+  const [message, setMessage] = React.useState<string>('');
+
+  const handleSendMessage = () => {
+    // Aqui você pode adicionar o código para enviar a mensagem via Teams, por exemplo
+    console.log('Mensagem enviada:', message);
+    hidePopup(); // Fechar o modal após o envio
+  };
 
   return (
     <>
@@ -40,17 +49,25 @@ export const PopupModal: React.FunctionComponent<{ member: IBirthdaysMembersItem
             onDismiss={hidePopup}
           >
             <Overlay onClick={hidePopup} />
-            <FocusTrapZone>
-              <div role="document" className={popupStyles.content}>
+            <FocusTrapZone forceFocusInsideTrap={true} className={styles.focusTrap}>
+              <div role="messageTeams" className={popupStyles.content}>
                 <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua.
-                </p>
+                <div>
+                  <p>
+                    Escreva uma mensagem para enviar via Teams:
+                  </p>
+                  <textarea
+                    placeholder="Digite sua mensagem ..."
+                    className={styles.messageTeams}
+                    value={message}
+                    rows={10}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </div>
                 <hr className={styles.my2} />
                 <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
                   <DefaultButton className='btnDanger' onClick={hidePopup} iconProps={{ iconName: 'ChromeClose' }}>Fechar</DefaultButton>
-                  <DefaultButton className='btnSucess' onClick={hidePopup} iconProps={{ iconName: 'Send' }}>Enviar</DefaultButton>
+                  <DefaultButton className='btnSucess' onClick={handleSendMessage} iconProps={{ iconName: 'Send' }}>Enviar</DefaultButton>
                 </div>
               </div>
             </FocusTrapZone>
