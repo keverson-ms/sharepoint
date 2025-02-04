@@ -48,10 +48,10 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        year: (this.properties.year ?? (new Date().getFullYear().toString())),
+        year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
         items: this.properties.items = (this.properties.items ?? []),
-        totalHoras: this.getHoras(),
-        totalValores: this.getValores(),
+        totalHoras: this.properties.totalHoras = this.properties.totalHoras ?? this.getHoras(),
+        totalValores: this.properties.totalValores = this.properties.totalValores ?? this.getValores(),
       }
     );
 
@@ -61,7 +61,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
 
     ReactDom.render(element, this.domElement);
-
     this.animateCounterUp();
   }
 
@@ -72,56 +71,55 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     }).map((item: { horas: number }) => item.horas)
       .reduce((a: number, b: number) => Number(a) + Number(b), 0);
 
-    return this.properties.totalHoras = horas.toString();
+    return horas.toString();
   }
 
   protected getValores(): string {
     const valores = this.properties.items?.filter((item: { ano: string }) => {
       return this.properties.year === item.ano;
     }).map((item: { valor: number }) => item.valor)
-      .reduce((a: number, b: number) => a + b, 0);
+      .reduce((a: number, b: number) => Number(a) + Number(b), 0);
 
-    console.log('ano selecionado: ', this.properties.year, 'valores: ', this.numberFormat(valores.toString()));
-    return this.properties.totalValores = this.numberFormat(valores.toString());
+    return this.numberFormat(valores.toString());
   }
 
   private animateCounterUp(): void {
     const elements = this.domElement.querySelectorAll(".counter-up");
 
     return elements.forEach((element: Element) => {
-      const text = element.getAttribute("data-value") ?? `${element.textContent}`;
-      const value = parseFloat(text.toString());
-      console.log('text: ', text, 'value: ', value);
-      if (!isNaN(value)) {
-        const startValue = 0;
-        const duration = 10000; // Duração da animação em milissegundos
-        let startTime: number | null = null;
+      setTimeout(() => {
+        const value = parseFloat(element.getAttribute('data-value')?.toString() || '0');
+        element.textContent = value.toString();
 
-        const animate = (currentTime: number) => {
-          if (!startTime) {
-            startTime = currentTime;
-          }
+        if (!isNaN(value)) {
+          const startValue = 0;
+          const duration = 10000; // Duração da animação em milissegundos
+          let startTime: number | null = null;
 
-          const progress = Math.min((currentTime - startTime) / duration, 1);
-          const currentValue = startValue + (value - startValue) * progress;
+          const animate = (currentTime: number) => {
+            if (!startTime) {
+              startTime = currentTime;
+            }
 
-          const formattedValue = (value % 1 === 0)
-            ? Math.ceil(currentValue).toLocaleString("pt-BR")
-            : currentValue.toLocaleString("pt-BR", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            });
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const currentValue = startValue + (value - startValue) * progress;
 
-          console.log('formattedValue: ', formattedValue);
+            const formattedValue = (value % 1 === 0)
+              ? Math.ceil(currentValue).toLocaleString("pt-BR")
+              : currentValue.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
 
-          element.textContent = formattedValue;
+            element.textContent = formattedValue;
 
-          if (progress < 1) {
-            return requestAnimationFrame(animate);
-          }
-        };
-        return requestAnimationFrame(animate);
-      }
+            if (progress < 1) {
+              return requestAnimationFrame(animate);
+            }
+          };
+          return requestAnimationFrame(animate);
+        }
+      }, 250);
     });
   }
 
@@ -257,11 +255,13 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
   protected numberFormat(money: string): string {
     const numericValue = money.replace(/[^\d]/g, "");
+    // const numericValue = money.replace("R$", "").replace(/&nbsp;/g, "").replace(",", ".");
 
     const parsedValue = parseFloat(numericValue);
+    console.log(parsedValue);
 
-    const maskedValue = new Intl.NumberFormat("pt-BR").format(parsedValue / 100).replace("R$", "").replace(/&nbsp;/g, "").replace(/&nbsp;/g, "").replace(".", "").replace(",", ".");
-
+    const maskedValue = new Intl.NumberFormat("pt-BR").format(parsedValue / 100);
+    console.log(maskedValue);
     const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
 
     return value.replace('R$', '').replace(/&nbsp;/g, "");
