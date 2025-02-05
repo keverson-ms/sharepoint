@@ -8,13 +8,12 @@ import {
   PropertyPaneToggle,
   PropertyPaneSlider,
 } from '@microsoft/sp-property-pane';
-import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
+import { BaseClientSideWebPart, WebPartContext } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'BirthdaysMonthWebPartStrings';
 import BirthdaysMonth from './components/BirthdaysMonth';
 import { IBirthdaysMonthProps, IBirthdaysMembersItem, IBirthdaysMembersGroupsItem } from './components/IBirthdaysMonthProps';
-import { ITeamsMessageModalProps } from './components/ITeamsMessageModalProps';
 import MsGraphProvider from '../services/msGraphProvider';
 
 export interface IBirthdaysMonthWebPartProps {
@@ -24,7 +23,8 @@ export interface IBirthdaysMonthWebPartProps {
   members: IBirthdaysMembersItem[];
   absoluteUrl: string;
   overflow: number;
-  webPartContext: ITeamsMessageModalProps
+  webPartContext: WebPartContext,
+  msGraph: MsGraphProvider
 }
 
 export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthdaysMonthWebPartProps> {
@@ -33,7 +33,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _environmentMessage: string = '';
   private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
   private defaultOverflow = 500;
-  private msGraphProvider: MsGraphProvider = new MsGraphProvider(this.context);
+  private msGraphProvider: MsGraphProvider = new MsGraphProvider();
 
   public render(): void {
 
@@ -55,12 +55,12 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         group: this.properties.group,
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
         overflow: this.properties.overflow ?? this.defaultOverflow,
-        webPartContext: this.properties.webPartContext
+        webPartContext: this.context,
+        msGraph: this.msGraphProvider
       }
     );
 
     this.domElement.style.setProperty('--overflow', `${this.properties.overflow ?? this.defaultOverflow}px`);
-
     ReactDom.render(element, this.domElement);
   }
 

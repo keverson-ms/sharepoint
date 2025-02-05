@@ -15,7 +15,8 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
     const {
       absoluteUrl,
       hasTeamsContext,
-      webPartContext
+      webPartContext,
+      msGraph
     } = this.props;
 
     return (
@@ -48,7 +49,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
                       tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
                     }}
                   />
-                  <TeamsMessageModal member={member} props={webPartContext} />
+                  <TeamsMessageModal member={member} props={webPartContext} msGraph={msGraph} />
                 </div>
               </>
             ))

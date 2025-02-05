@@ -1,21 +1,18 @@
+import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IBirthdaysMembersGroupsItem, IBirthdaysMembersItem } from '../birthdaysMonth/components/IBirthdaysMonthProps';
-import { AadHttpClient, HttpClientResponse, MSGraphClientFactory } from '@microsoft/sp-http';
+import { AadHttpClient, HttpClientResponse, MSGraphClientFactory, MSGraphClientV3 } from '@microsoft/sp-http';
 
 export default class msGraphProvider extends MSGraphClientFactory {
 
-    public context: any;
-
-    public constructor(context: any) {
-        console.log(context);
-        super();
-        this.context = context;
-    }
-
-    private async _getAadHttpClient(context: any): Promise<AadHttpClient> {
+    private async _getAadHttpClient(context: WebPartContext): Promise<AadHttpClient> {
         return context.aadHttpClientFactory.getClient('https://graph.microsoft.com');
     }
 
-    public async _fetchGroups(context: any): Promise<IBirthdaysMembersGroupsItem[]> {
+    private async _getMSGraphClient(context: WebPartContext): Promise<MSGraphClientV3> {
+        return context.msGraphClientFactory.getClient("3");
+    }
+
+    public async _fetchGroups(context: WebPartContext): Promise<IBirthdaysMembersGroupsItem[]> {
         const client = await this._getAadHttpClient(context);
 
         const response: HttpClientResponse = await client.get(
@@ -42,7 +39,7 @@ export default class msGraphProvider extends MSGraphClientFactory {
         return groups;
     }
 
-    public async _fetchGroupMembers(groupId: string, context: any): Promise<IBirthdaysMembersItem[]> {
+    public async _fetchGroupMembers(groupId: string, context: WebPartContext): Promise<IBirthdaysMembersItem[]> {
 
         if (groupId) {
             const client = await this._getAadHttpClient(context);
@@ -106,4 +103,41 @@ export default class msGraphProvider extends MSGraphClientFactory {
 
         return [];
     }
+
+    public async sendBirthdayMessage(userId: string, context: WebPartContext, message: string): Promise<void> {
+        try {
+            const client = await this._getMSGraphClient(context);
+
+            let chatId: string | null = null;
+
+            const chatResponse = await client.api('/chats').post({
+                "chatType": "oneOnOne",
+                "members": [
+                    {
+                        "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                        "roles": ["owner"],
+                        "user@odata.bind": `https://graph.microsoft.com/v1.0/users/${context.pageContext.user.email}`
+                    },
+                    {
+                        "@odata.type": "#microsoft.graph.aadUserConversationMember",
+                        "roles": ["owner"],
+                        "user@odata.bind": `https://graph.microsoft.com/v1.0/users/${userId}`
+                    }
+                ]
+            });
+
+            console.log(chatResponse.id)
+
+            chatId = chatResponse.id;
+
+            await client.api(`/chats/${chatId}/messages`).post({
+                "body": { "content": message }
+            });
+
+            console.log("Mensagem enviada com sucesso!");
+        } catch (error) {
+            console.error("Erro ao enviar mensagem para o Teams:", error);
+        }
+    }
+
 }

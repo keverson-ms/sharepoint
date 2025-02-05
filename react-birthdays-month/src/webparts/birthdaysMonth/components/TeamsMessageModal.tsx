@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { mergeStyleSets, DefaultButton, FocusTrapZone, Layer, Overlay, Popup } from '@fluentui/react';
+import { mergeStyleSets, DefaultButton, FocusTrapZone, Layer, Overlay, Popup, MessageBar, MessageBarType } from '@fluentui/react';
 import { useBoolean } from '@fluentui/react-hooks';
 import styles from './BirthdaysMonth.module.scss';
 import { IBirthdaysMembersItem } from './IBirthdaysMonthProps';
-import { ITeamsMessageModalProps } from './ITeamsMessageModalProps';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+import msGraphProvider from '../../services/msGraphProvider';
 
 const popupStyles = mergeStyleSets({
   root: {
@@ -26,49 +27,69 @@ const popupStyles = mergeStyleSets({
   },
 });
 
-export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: ITeamsMessageModalProps }> = ({ member, props }) => {
+export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: WebPartContext, msGraph: msGraphProvider }> = ({ member, props, msGraph }) => {
 
   const [isPopupVisible, { setTrue: showPopup, setFalse: hidePopup }] = useBoolean(false);
-
   const [message, setMessage] = React.useState<string>('');
+  const [charCount, setCharCount] = React.useState<number>(0);
+  const [notification, setNotification] = React.useState<{ type: MessageBarType, text: string } | null>(null);
 
-  const handleSendMessage = () => {
-    // Aqui você pode adicionar o código para enviar a mensagem via Teams, por exemplo
-    console.log('Mensagem enviada:', message, props);
-    hidePopup(); // Fechar o modal após o envio
+  const handleSendMessage = async () => {
+    const messageToSend = message.trim();
+
+    try {
+
+      await msGraph.sendBirthdayMessage(member.mail, props, messageToSend);
+
+      setNotification({ type: MessageBarType.success, text: '🎉 Mensagem enviada com sucesso!' });
+      setMessage('');
+      hidePopup();
+    } catch (error) {
+      setMessage(messageToSend);
+      setNotification({ type: MessageBarType.error, text: '❌ Erro ao enviar mensagem.' });
+    }
+
+    setTimeout(() => {
+      setNotification(null);
+    }, 4000);
   };
 
   return (
     <>
+      {notification && (
+        <MessageBar messageBarType={notification.type} onDismiss={() => setNotification(null)}>
+          {notification.text}
+        </MessageBar>
+      )}
+
       <DefaultButton className={styles.bgTeams} iconProps={{ iconName: 'TeamsLogo', color: 'green' }} onClick={showPopup} />
+
       {isPopupVisible && (
         <Layer>
-          <Popup
-            className={popupStyles.root}
-            role="dialog"
-            aria-modal="true"
-            onDismiss={hidePopup}
-          >
+          <Popup className={popupStyles.root} role="dialog" aria-modal="true" onDismiss={hidePopup}>
             <Overlay onClick={hidePopup} />
             <FocusTrapZone forceFocusInsideTrap={true} className={styles.focusTrap}>
               <div role="messageTeams" className={popupStyles.content}>
                 <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
                 <div>
-                  <p>
-                    Escreva uma mensagem para enviar via Teams:
-                  </p>
+                  <p>Escreva uma mensagem para enviar via Teams:</p>
                   <textarea
                     placeholder="Digite sua mensagem ..."
                     className={styles.messageTeams}
                     value={message}
-                    rows={10}
-                    onChange={(e) => setMessage(e.target.value)}
+                    rows={5}
+                    onChange={(e) => {
+                      const text = e.target.value;
+                      setMessage(text);
+                      setCharCount(text.length); // Atualiza o contador com base no número de caracteres
+                    }}
                   />
                 </div>
+                <p className={`${styles.colorTheme} ${styles.fontWeightBold} ${styles.m0}`}>{charCount} / minímo de 20 caracteres</p>
                 <hr className={styles.my2} />
                 <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
                   <DefaultButton className='btnDanger' onClick={hidePopup} iconProps={{ iconName: 'ChromeClose' }}>Fechar</DefaultButton>
-                  <DefaultButton className='btnSucess' onClick={handleSendMessage} iconProps={{ iconName: 'Send' }}>Enviar</DefaultButton>
+                  <DefaultButton className='btnSucess' onClick={handleSendMessage} iconProps={{ iconName: 'Send' }} disabled={message.trim().length < 20}>Enviar</DefaultButton>
                 </div>
               </div>
             </FocusTrapZone>

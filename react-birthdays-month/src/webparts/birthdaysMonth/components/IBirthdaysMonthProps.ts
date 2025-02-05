@@ -1,4 +1,5 @@
-import { ITeamsMessageModalProps } from "./ITeamsMessageModalProps";
+import { WebPartContext } from "@microsoft/sp-webpart-base";
+import msGraphProvider from "../../services/msGraphProvider";
 
 export interface IBirthdaysMonthProps {
   title: string;
@@ -10,7 +11,8 @@ export interface IBirthdaysMonthProps {
   group: string;
   absoluteUrl: string;
   overflow: number;
-  webPartContext: ITeamsMessageModalProps
+  webPartContext: WebPartContext,
+  msGraph: msGraphProvider
 }
 
 export interface IBirthdaysMembersItem {
