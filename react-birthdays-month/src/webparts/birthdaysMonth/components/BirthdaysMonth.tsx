@@ -40,7 +40,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
                     size={PersonaSize.size72}
                     text={member.displayName}
                     secondaryText={member.jobTitle}
-                    tertiaryText={member.dateBirthExtension}
+                    tertiaryText={member.dayBirthExtension}
                     imageUrl={`${absoluteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${member.mail}` || TestImages.personaMale}
                     initialsColor={PersonaInitialsColor.gold}
                     styles={{

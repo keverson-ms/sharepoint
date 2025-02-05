@@ -92,7 +92,7 @@ export default class msGraphProvider extends MSGraphClientFactory {
                 mobilePhone: member.mobilePhone,
                 officeLocation: member.officeLocation,
                 dateBirth: isValidDate(member.officeLocation) ? member.officeLocation : null,
-                dateBirthExtension: isValidDate(member.officeLocation) ? formatDateToPortuguese(member.officeLocation) : null,
+                dayBirthExtension: isValidDate(member.officeLocation) ? formatDateToPortuguese(member.officeLocation) : null,
                 preferredLanguage: member.preferredLanguage,
                 surname: member.surname,
                 userPrincipalName: member.userPrincipalName

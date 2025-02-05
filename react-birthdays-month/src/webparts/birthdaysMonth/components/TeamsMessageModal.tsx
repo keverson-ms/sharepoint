@@ -53,7 +53,7 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
       setNotification(null);
     }, 4000);
   };
-
+  console.log(member);
   return (
     <>
       {notification && (

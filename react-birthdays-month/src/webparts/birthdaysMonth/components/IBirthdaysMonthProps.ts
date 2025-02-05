@@ -25,7 +25,7 @@ export interface IBirthdaysMembersItem {
   mobilePhone: string;
   officeLocation: string;
   dateBirth: string;
-  dateBirthExtension: string;
+  dayBirthExtension: string;
   preferredLanguage: string;
   surname: string;
   userPrincipalName: string;
