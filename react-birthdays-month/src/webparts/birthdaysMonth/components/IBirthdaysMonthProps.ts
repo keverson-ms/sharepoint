@@ -12,7 +12,8 @@ export interface IBirthdaysMonthProps {
   absoluteUrl: string;
   overflow: number;
   webPartContext: WebPartContext,
-  msGraph: msGraphProvider
+  msGraph: msGraphProvider,
+  caracteres: number
 }
 
 export interface IBirthdaysMembersItem {

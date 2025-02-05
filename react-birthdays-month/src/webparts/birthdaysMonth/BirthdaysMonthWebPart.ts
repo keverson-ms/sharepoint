@@ -24,7 +24,8 @@ export interface IBirthdaysMonthWebPartProps {
   absoluteUrl: string;
   overflow: number;
   webPartContext: WebPartContext,
-  msGraph: MsGraphProvider
+  msGraph: MsGraphProvider,
+  caracteres: number
 }
 
 export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthdaysMonthWebPartProps> {
@@ -34,6 +35,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
   private defaultOverflow = 500;
   private msGraphProvider: MsGraphProvider = new MsGraphProvider();
+  private minCaracteres = 10;
 
   public render(): void {
 
@@ -54,9 +56,10 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         members: this.properties.members ?? [],
         group: this.properties.group,
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
-        overflow: this.properties.overflow ?? this.defaultOverflow,
+        overflow: this.properties.overflow = (this.properties.overflow ?? this.defaultOverflow),
         webPartContext: this.context,
-        msGraph: this.msGraphProvider
+        msGraph: this.msGraphProvider,
+        caracteres: this.properties.caracteres = (this.properties.caracteres ?? this.minCaracteres)
       }
     );
 
@@ -166,7 +169,16 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   min: this.defaultOverflow,
                   max: 1000,
                   value: this.properties.overflow,
-                  disabled: this.properties.group ? false : true
+                  disabled: this.properties.group ? false : true,
+                  showValue: true
+                }),
+                PropertyPaneSlider('caracteres', {
+                  label: 'Quantidade mínima de caracteres na mensagem',
+                  min: this.minCaracteres,
+                  max: 1000,
+                  value: this.properties.caracteres,
+                  disabled: this.properties.group ? false : true,
+                  showValue: true
                 })
               ]
             }

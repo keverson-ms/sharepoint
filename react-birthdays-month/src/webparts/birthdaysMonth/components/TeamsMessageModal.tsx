@@ -27,7 +27,7 @@ const popupStyles = mergeStyleSets({
   },
 });
 
-export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: WebPartContext, msGraph: msGraphProvider }> = ({ member, props, msGraph }) => {
+export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: WebPartContext, msGraph: msGraphProvider, caracteres: number }> = ({ member, props, msGraph, caracteres }) => {
 
   const [isPopupVisible, { setTrue: showPopup, setFalse: hidePopup }] = useBoolean(false);
   const [message, setMessage] = React.useState<string>('');
@@ -35,7 +35,7 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
   const [notification, setNotification] = React.useState<{ type: MessageBarType, text: string } | null>(null);
 
   const handleSendMessage = async () => {
-    const messageToSend = message.trim();
+    const messageToSend = message.trim().replace(/\s{3,}/g, ' ');
 
     try {
 
@@ -80,16 +80,16 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
                     rows={5}
                     onChange={(e) => {
                       const text = e.target.value;
-                      setMessage(text);
-                      setCharCount(text.length); // Atualiza o contador com base no número de caracteres
+                      setMessage(text.replace(/\s{3,}/g, ' '));
+                      setCharCount(text.replace(/\s{3,}/g, ' ').length); // Atualiza o contador com base no número de caracteres
                     }}
                   />
                 </div>
-                <p className={`${styles.colorTheme} ${styles.fontWeightBold} ${styles.m0}`}>{charCount} / minímo de 20 caracteres</p>
+                <p className={`${styles.colorTheme} ${styles.fontWeightBold} ${styles.m0}`}>{charCount} / minímo de {caracteres} caracteres</p>
                 <hr className={styles.my2} />
                 <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
                   <DefaultButton className='btnDanger' onClick={hidePopup} iconProps={{ iconName: 'ChromeClose' }}>Fechar</DefaultButton>
-                  <DefaultButton className='btnSucess' onClick={handleSendMessage} iconProps={{ iconName: 'Send' }} disabled={message.trim().length < 20}>Enviar</DefaultButton>
+                  <DefaultButton className='btnSucess' onClick={handleSendMessage} iconProps={{ iconName: 'Send' }} disabled={message.replace(/\s{3,}/g, ' ').length < caracteres}>Enviar</DefaultButton>
                 </div>
               </div>
             </FocusTrapZone>
