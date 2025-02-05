@@ -41,9 +41,9 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
 
       await msGraph.sendBirthdayMessage(member.mail, props, messageToSend);
 
-      setNotification({ type: MessageBarType.success, text: '🎉 Mensagem enviada com sucesso!' });
       setMessage('');
       hidePopup();
+      setNotification({ type: MessageBarType.success, text: '🎉 Mensagem enviada com sucesso!' });
     } catch (error) {
       setMessage(messageToSend);
       setNotification({ type: MessageBarType.error, text: '❌ Erro ao enviar mensagem.' });
