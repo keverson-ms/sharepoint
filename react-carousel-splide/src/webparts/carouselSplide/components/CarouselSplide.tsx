@@ -41,7 +41,7 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
         {this.props.description ? <p>{this.props.description}</p> : ''}
         <div id={this.generatedUniqueId} className="splide">
           <div className="splide__track">
-            <ul className="splide__list">
+            <ul className={`splide__list ${styles.alignItemsCenter}`}>
               {items.map((item, index) => (
                 item.Ativo ? (<li key={index} className={`splide__slide ${styles.links}`}>
                   <a href={item.Link ?? '#'} target={item.Link ? '_blank' : '_self'} rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
