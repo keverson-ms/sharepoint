@@ -37,16 +37,16 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
 
     return (
       <section className={`${styles.carouselSplide} ${hasTeamsContext ? styles.teams : ''}`}>
-        <h3>{this.props.title ? `${this.props.title}` : ``}</h3>
-        <p>{this.props.description ? `${this.props.description}` : ``}</p>
+        {this.props.title ? <h3 className={`${styles.title} ${styles.fontWeightBold} ${styles.fontSize1_75}`}>{this.props.title}</h3> : ''}
+        {this.props.description ? <p>{this.props.description}</p> : ''}
         <div id={this.generatedUniqueId} className="splide">
           <div className="splide__track">
             <ul className="splide__list">
               {items.map((item, index) => (
-                item.Ativo ? (<li key={index} className="splide__slide">
+                item.Ativo ? (<li key={index} className={`splide__slide ${styles.links}`}>
                   <a href={item.Link ?? '#'} target={item.Link ? '_blank' : '_self'} rel="noopener noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
                     <img src={item.Imagem} alt={item.Titulo} width="100%" style={{ borderRadius: `${this.props.roundedItem}%` }} />
-                    <p className='root-88'>{item.Titulo}</p>
+                    {item.Titulo ? <p className={`${styles.title} ${styles.fontWeightBold}`}>{item.Titulo}</p> : ''}
                   </a>
                 </li>) : null
               ))}
@@ -69,6 +69,20 @@ export default class CarouselSplide extends React.Component<ICarouselSplideProps
         direction: this.props.direction ? 'rtl' : 'ltr',
         padding: `${this.props.padding || 0}%`,
         gap: `${this.props.spaceBetweenItems}px`,
+        breakpoints: {
+          500: {
+            perPage: 1
+          },
+          768: {
+            perPage: 2
+          },
+          992: {
+            perPage: 3
+          },
+          1200: {
+            perPage: 4
+          }
+        }
       }).mount();
     }
   }

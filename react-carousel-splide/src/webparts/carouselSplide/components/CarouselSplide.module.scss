@@ -72,3 +72,20 @@
     }
   }
 }
+
+.title {
+  color: "[theme:link, default:#03787c]";
+  color: var(--link);
+}
+
+.fontWeightBold {
+  font-weight: bold;
+}
+
+.fontWeight800 {
+  font-weight: 800;
+}
+
+.fontSize1_75 {
+  font-size: 1.75em;
+}

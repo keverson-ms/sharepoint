@@ -41,16 +41,6 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
   private minPerPage: number = 1;
   private maxPerPage: number = 10;
 
-  /* private allowedImageTypes = [
-    "image/gif",
-    "image/jpeg",
-    "image/bmp",
-    "image/tiff",
-    "image/x-icon",
-    "image/png",
-    "image/svg+xml",
-  ]; */
-
   public render(): void {
 
     const element: React.ReactElement<ICarouselSplideProps> = React.createElement(
@@ -144,7 +134,6 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
 
-    console.log(this.properties.items);
     return {
       pages: [
         {
@@ -169,7 +158,6 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                       id: "Titulo",
                       title: "Titulo",
                       type: CustomCollectionFieldType.string,
-                      required: true,
                       onGetErrorMessage: (value: string): string => {
                         console.log('Field Titulo: ' + value);
                         return '';
@@ -316,28 +304,32 @@ export default class CarouselSplideWebPart extends BaseClientSideWebPart<ICarous
                   max: this.properties.type === 'fade' ? this.minPerPage : this.maxPerPage,
                   value: this.properties.type === 'fade' ? this.minPerPage : this.properties.perPage,
                   label: `${strings.PerPageFieldLabel}: (${this.properties.perPage})`,
-                  disabled: this.properties.type === 'fade'
+                  disabled: this.properties.type === 'fade',
+                  showValue: true,
                 }),
                 PropertyPaneSlider('roundedItem', {
                   min: 0,
                   max: 50,
                   value: this.properties.roundedItem,
                   label: `${strings.RoundedItemFieldLabel} (${this.properties.roundedItem ? this.properties.roundedItem : 0} %)`,
-                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true
+                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true,
+                  showValue: true,
                 }),
                 PropertyPaneSlider('padding', {
                   min: 0,
                   max: 5,
                   value: this.properties.padding,
                   label: `${strings.PaddingFieldLabel} (${this.properties.padding ? this.properties.padding : 0} %)`,
-                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true
+                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true,
+                  showValue: true,
                 }),
                 PropertyPaneSlider('spaceBetweenItems', {
                   min: 1,
                   max: 15,
                   value: this.properties.spaceBetweenItems,
                   label: `${strings.PaddingFieldLabel} (${this.properties.spaceBetweenItems ? this.properties.spaceBetweenItems : 0} px)`,
-                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true
+                  disabled: !this.properties.items || this.properties.items.length > 1 ? false : true,
+                  showValue: true,
                 }),
               ]
             }

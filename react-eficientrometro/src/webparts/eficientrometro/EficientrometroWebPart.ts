@@ -50,8 +50,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         userDisplayName: this.context.pageContext.user.displayName,
         year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
         items: this.properties.items = (this.properties.items ?? []),
-        totalHoras: this.properties.totalHoras = this.properties.totalHoras ?? this.getHoras(),
-        totalValores: this.properties.totalValores = this.properties.totalValores ?? this.getValores(),
+        totalHoras: this.properties.totalHoras = (this.properties.totalHoras ?? this.getHoras()),
+        totalValores: this.properties.totalValores = (this.properties.totalValores ?? this.getValores()),
       }
     );
 
@@ -75,15 +75,14 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   }
 
   protected getValores(): string {
-    const valores = this.properties.items
-      ?.filter((item: { ano: string; valor: string | number }) => this.properties.year === item.ano)
+    const valores = this.properties.items?.filter((item: { ano: string; valor: string | number }) => this.properties.year === item.ano)
       .map((item: { valor: string | number }) => {
         const valorString = typeof item.valor === 'string' ? item.valor : item.valor.toString();
         const valorNumerico = parseFloat(valorString.replace(/[^\d,]/g, '').replace(',', '.'));
 
         return isNaN(valorNumerico) ? 0 : valorNumerico;
       })
-      .reduce((a: number, b: number) => a + b);
+      .reduce((a: number, b: number) => a + b, 0);
 
     return this.numberFormat(valores.toString());
   }
