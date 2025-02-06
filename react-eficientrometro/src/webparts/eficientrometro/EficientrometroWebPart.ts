@@ -84,7 +84,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         return isNaN(valorNumerico) ? 0 : valorNumerico;
       })
       .reduce((a: number, b: number) => a + b, 0);
-    console.log(valores);
+
     return this.numberFormat(valores.toString());
   }
 
@@ -152,9 +152,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     if (propertyPath === "year" && newValue !== oldValue) {
       this.properties.year = newValue;
-      this.properties.totalHoras = this.getHoras();
-      this.properties.totalValores = this.getValores();
     }
+    this.properties.totalHoras = this.getHoras();
+    this.properties.totalValores = this.getValores();
   }
 
   protected async onInit(): Promise<void> {
@@ -263,7 +263,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const numericValue = money.replace(/[^\d.]/g, '').replace(',', '.');
 
     const parsedValue = parseFloat(numericValue);
-    console.log(parsedValue);
 
     return parsedValue.toString();
   }
