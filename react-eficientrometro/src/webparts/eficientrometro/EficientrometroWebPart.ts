@@ -40,7 +40,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
       {
-        title: this.properties.title = (this.properties.title ?? 'Eficientrômetro CSC'),
+        title: this.properties.title = (this.properties.title ?? 'Eficientômetro CSC'),
         title_size: this.properties.title_size = (this.properties.title_size ?? 3),
         color: this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false,
         background: this.properties.background = (this.properties.background ?? this.domElement.style.getPropertyValue('--link')),
