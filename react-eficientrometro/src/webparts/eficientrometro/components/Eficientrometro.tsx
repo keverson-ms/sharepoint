@@ -27,7 +27,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
           <div className={styles['ms-Grid-row']}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
               <div className={`${styles.valores} ${styles['ms-fontWeight-bold']}`}>
-                R$ <span className={`counter-up`} data-value={totalValores}>{`${totalValores}`}</span>
+                R$ <span className={`counter-up`} data-value={totalValores} data-money>{totalValores}</span>
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
                 Economia gerada em <span className={`counter-up`} data-value={year}>{year}</span> (acumulada)

@@ -83,7 +83,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
         return isNaN(valorNumerico) ? 0 : valorNumerico;
       })
-      .reduce((a: number, b: number) => a + b, 0);
+      .reduce((a: number, b: number) => a + b);
 
     return this.numberFormat(valores.toString());
   }
@@ -110,9 +110,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
             const progress = Math.min((currentTime - startTime) / duration, 1);
             const currentValue = startValue + (value - startValue) * progress;
 
-            const formattedValue = (value % 1 === 0)
-              ? Math.ceil(currentValue).toLocaleString("pt-BR")
-              : currentValue.toLocaleString("pt-BR", {
+            const formattedValue = (value % 1 === 0) && !element.getAttribute('data-money')
+              ? Math.ceil(currentValue).toLocaleString("pt-BR").replace('.', '')
+              : (currentValue).toLocaleString("pt-BR", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               });
@@ -248,7 +248,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     const currentYear = new Date().getFullYear();
     const years = [];
 
-    for (let i = currentYear; i >= 2022; i--) {
+    for (let i = currentYear; i >= 2023; i--) {
       years.push(i);
     }
 
