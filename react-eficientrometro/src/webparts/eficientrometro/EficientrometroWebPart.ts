@@ -153,8 +153,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     if (propertyPath === "year" && newValue !== oldValue) {
       this.properties.year = newValue;
     }
-    this.properties.totalHoras = this.getHoras();
-    this.properties.totalValores = this.getValores();
+
+    if (propertyPath !== 'background') {
+      this.properties.totalHoras = this.getHoras();
+      this.properties.totalValores = this.getValores();
+    }
   }
 
   protected async onInit(): Promise<void> {
