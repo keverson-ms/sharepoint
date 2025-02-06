@@ -75,13 +75,19 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   }
 
   protected getValores(): string {
-    const valores = this.properties.items?.filter((item: { ano: string }) => {
-      return this.properties.year === item.ano;
-    }).map((item: { valor: number }) => item.valor)
-      .reduce((a: number, b: number) => Number(a) + Number(b), 0);
+    const valores = this.properties.items
+      ?.filter((item: { ano: string; valor: string | number }) => this.properties.year === item.ano)
+      .map((item: { valor: string | number }) => {
+        const valorString = typeof item.valor === 'string' ? item.valor : item.valor.toString();
+        const valorNumerico = parseFloat(valorString.replace(/[^\d,]/g, '').replace(',', '.'));
 
+        return isNaN(valorNumerico) ? 0 : valorNumerico;
+      })
+      .reduce((a: number, b: number) => a + b, 0);
+    console.log(valores);
     return this.numberFormat(valores.toString());
   }
+
 
   private animateCounterUp(): void {
     const elements = this.domElement.querySelectorAll(".counter-up");
@@ -254,17 +260,12 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   }
 
   protected numberFormat(money: string): string {
-    const numericValue = money.replace(/[^\d]/g, "");
-    // const numericValue = money.replace("R$", "").replace(/&nbsp;/g, "").replace(",", ".");
+    const numericValue = money.replace(/[^\d.]/g, '').replace(',', '.');
 
     const parsedValue = parseFloat(numericValue);
     console.log(parsedValue);
 
-    const maskedValue = new Intl.NumberFormat("pt-BR").format(parsedValue / 100);
-    console.log(maskedValue);
-    const value = maskedValue.replace(/[^\d]/g, "") ? maskedValue : "";
-
-    return value.replace('R$', '').replace(/&nbsp;/g, "");
+    return parsedValue.toString();
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
