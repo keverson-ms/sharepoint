@@ -1,6 +1,7 @@
 export interface IEficientrometroProps {
   title: string;
-  title_size: number;
+  titleSize: number;
+  valueBlockFontSize: number;
   background: string;
   isDarkTheme: boolean;
   environmentMessage: string;

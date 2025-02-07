@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styles from './Eficientrometro.module.scss';
 import type { IEficientrometroProps } from './IEficientrometroProps';
+import { Pivot, PivotItem, Label } from 'office-ui-fabric-react';
+// import { Pivot, PivotItem, Label } from '@fluentui/react';
 
 export default class Eficientrometro extends React.Component<IEficientrometroProps> {
   public render(): React.ReactElement<IEficientrometroProps> {
@@ -24,18 +26,29 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
               <h2 className={`${styles.title} ${styles['ms-fontWeight-bold']}`}>{title}</h2>
             </div>
           </div>
+          <Pivot className='kaligula'>
+            <PivotItem headerText="First Tab">
+              <Label>Content 1</Label>
+            </PivotItem>
+            <PivotItem headerText="Second Tab">
+              <Label>Content 2</Label>
+            </PivotItem>
+            <PivotItem headerText="Third Tab">
+              <Label>Content 3</Label>
+            </PivotItem>
+          </Pivot>
           <div className={styles['ms-Grid-row']}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
-              <div className={`${styles.valores} ${styles['ms-fontWeight-bold']}`}>
-                R$ <span className={`counter-up`} data-value={totalValores} data-money>{totalValores}</span>
+              <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
+                <span className={styles.prefixValue}>R$</span> <span className={`counter-up ${styles.valores}`} data-value={totalValores} data-money>{totalValores}</span>
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
                 Economia gerada em <span className={`counter-up`} data-value={year}>{year}</span> (acumulada)
               </div>
             </div>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
-              <div className={`${styles.valores} ${styles['ms-fontWeight-bold']}`}>
-                <span className={`counter-up`} data-value={totalHoras}>{totalHoras}</span> hs
+              <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
+                <span className={`counter-up ${styles.valores}`} data-value={totalHoras}>{totalHoras}</span> <span className={styles.prefixValue}>hs</span>
               </div>
               <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
                 Ganho de Produtividade Operacional

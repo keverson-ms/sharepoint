@@ -43,14 +43,21 @@
   filter: invert(1);
 }
 
-.valores {
+.valueBlockFontSize {
   background-color: var(--background-valores);
-  color: var(--text-valores);
   padding: 0.5em;
   margin: .25em 0;
-  text-align: center;
+  text-align: var(--text-align-center);
   font-weight: bold;
-  font-size: 2rem;
+  color: var(--text-valores);
+}
+
+.valores {
+  font-size: var(--valueBlockFontSize);
+}
+
+.prefixValue {
+  font-size: var(--prefixValue);
 }
 
 .title {

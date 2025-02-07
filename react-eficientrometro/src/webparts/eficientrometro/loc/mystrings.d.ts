@@ -3,7 +3,8 @@ declare interface IEficientrometroWebPartStrings {
   BasicGroupName: string;
   TitleFieldLabel: string;
   TitleSizeFieldLabel: string;
-  TitleAlignCenterFieldLabel: string;
+  ValueBlockFontSize: string;
+  TextAlignCenterFieldLabel: string;
   AppLocalEnvironmentSharePoint: string;
   AppLocalEnvironmentTeams: string;
   AppLocalEnvironmentOffice: string;

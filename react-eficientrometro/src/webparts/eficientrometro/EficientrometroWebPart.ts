@@ -17,12 +17,14 @@ import { IEficientrometroCollectionDataProps, IEficientrometroProps } from './co
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
 import { TextField } from "office-ui-fabric-react/lib/TextField";
+// import { Pivot } from 'office-ui-fabric-react/lib/Pivot';
 
 export interface IEficientrometroWebPartProps {
   title: string;
   background: string;
-  title_size: number;
-  titleAlignCenter: boolean;
+  titleSize: number;
+  valueBlockFontSize: number;
+  textAlignCenter: boolean;
   color: boolean;
   items: IEficientrometroCollectionDataProps[] | [];
   year: string;
@@ -41,7 +43,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       Eficientrometro,
       {
         title: this.properties.title = (this.properties.title ?? 'Eficientômetro CSC'),
-        title_size: this.properties.title_size = (this.properties.title_size ?? 3),
+        titleSize: this.properties.titleSize = (this.properties.titleSize ?? 3),
+        valueBlockFontSize: this.properties.valueBlockFontSize = (this.properties.valueBlockFontSize ?? 3),
         color: this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false,
         background: this.properties.background = (this.properties.background ?? this.domElement.style.getPropertyValue('--link')),
         isDarkTheme: this._isDarkTheme,
@@ -57,8 +60,10 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     this.domElement.style.setProperty('--background-valores', this.properties.background);
     this.domElement.style.setProperty('--text-valores', this.getContrastColor(this.properties.background));
-    this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
-    this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
+    this.domElement.style.setProperty('--title-size', `${this.properties.titleSize}em`);
+    this.domElement.style.setProperty('--valueBlockFontSize', `${this.properties.valueBlockFontSize}em`);
+    this.domElement.style.setProperty('--prefixValue', `${this.properties.valueBlockFontSize / 2}em`);
+    this.domElement.style.setProperty('--text-align-center', `${this.properties.textAlignCenter ? 'center' : 'left'}`);
 
     ReactDom.render(element, this.domElement);
     this.animateCounterUp();
@@ -136,12 +141,17 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       this.domElement.style.setProperty('--text-valores', this.getContrastColor(`${this.properties.background}`));
     }
 
-    if (propertyPath === "title_size" && newValue !== oldValue) {
-      this.domElement.style.setProperty('--title-size', `${this.properties.title_size}em`);
+    if (propertyPath === "titleSize" && newValue !== oldValue) {
+      this.domElement.style.setProperty('--title-size', `${this.properties.titleSize}em`);
     }
 
-    if (propertyPath === "titleAlignCenter" && newValue !== oldValue) {
-      this.domElement.style.setProperty('--text-align-center', `${this.properties.titleAlignCenter ? 'center' : 'left'}`);
+    if (propertyPath === "valueBlockFontSize" && newValue !== oldValue) {
+      this.domElement.style.setProperty('--valueBlockFontSize', `${this.properties.valueBlockFontSize}em`);
+      this.domElement.style.setProperty('--prefixValue', `${this.properties.valueBlockFontSize / 2}em`);
+    }
+
+    if (propertyPath === "textAlignCenter" && newValue !== oldValue) {
+      this.domElement.style.setProperty('--text-align-center', `${this.properties.textAlignCenter ? 'center' : 'left'}`);
     }
 
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
@@ -351,15 +361,22 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                 PropertyPaneTextField('title', {
                   label: strings.TitleFieldLabel,
                 }),
-                PropertyPaneSlider('title_size', {
+                PropertyPaneSlider('titleSize', {
                   label: strings.TitleSizeFieldLabel,
                   min: 2,
                   max: 4,
-                  value: this.properties.title_size
+                  value: this.properties.titleSize
                 }),
-                PropertyPaneToggle('titleAlignCenter', {
-                  label: 'Alinhar título ao centro',
-                  checked: this.properties.titleAlignCenter
+                PropertyPaneSlider('valueBlockFontSize', {
+                  label: strings.ValueBlockFontSize,
+                  min: 2,
+                  max: 4,
+                  value: this.properties.valueBlockFontSize
+                }),
+                PropertyPaneToggle('textAlignCenter', {
+                  label: 'Alinhar texto ao centro',
+                  checked: this.properties.textAlignCenter,
+                  inlineLabel: true
                 }),
                 PropertyPaneDropdown('year', {
                   label: 'Exibir dados do ano de: ',
