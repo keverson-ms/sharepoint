@@ -3,6 +3,7 @@
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/SPFabricCore.scss';
 @import '~@microsoft/sp-office-ui-fabric-core/dist/sass/ThemeOverrides.global.scss';
 @import '~office-ui-fabric-core/dist/sass/References.scss';
+@import '~office-ui-fabric-react/dist/sass/References.scss';
 
 .eficientrometro {
   overflow: hidden;
@@ -101,4 +102,12 @@
   background-color: var(--background-valores);
   margin: 0.1rem;
   filter: saturate(0.5);
+}
+
+[role=tablist] {
+  display: flex !important;
+
+  .ms-Button--action {
+    width: 100% !important;
+  }
 }

@@ -26,17 +26,21 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
               <h2 className={`${styles.title} ${styles['ms-fontWeight-bold']}`}>{title}</h2>
             </div>
           </div>
-          <Pivot className='kaligula'>
-            <PivotItem headerText="First Tab">
-              <Label>Content 1</Label>
-            </PivotItem>
-            <PivotItem headerText="Second Tab">
-              <Label>Content 2</Label>
-            </PivotItem>
-            <PivotItem headerText="Third Tab">
-              <Label>Content 3</Label>
-            </PivotItem>
-          </Pivot>
+          <div className={`${styles['ms-Grid-row']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']}`}>
+              <Pivot>
+                <PivotItem headerText="First Tab">
+                  <Label>Content 1</Label>
+                </PivotItem>
+                <PivotItem headerText="Second Tab">
+                  <Label>Content 2</Label>
+                </PivotItem>
+                <PivotItem headerText="Third Tab">
+                  <Label>Content 3</Label>
+                </PivotItem>
+              </Pivot>
+            </div>
+          </div>
           <div className={styles['ms-Grid-row']}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
               <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
