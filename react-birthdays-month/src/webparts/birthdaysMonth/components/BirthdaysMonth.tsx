@@ -49,7 +49,7 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
                       tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
                     }}
                   />
-                  <TeamsMessageModal member={member} props={webPartContext} msGraph={msGraph} caracteres={this.props.caracteres} />
+                  <TeamsMessageModal member={member} props={webPartContext} msGraph={msGraph} caracteres={this.props.caracteres} imageModal={this.props.imageModal} />
                 </div>
               </>
             ))

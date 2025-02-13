@@ -5,6 +5,7 @@ import styles from './BirthdaysMonth.module.scss';
 import { IBirthdaysMembersItem } from './IBirthdaysMonthProps';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import msGraphProvider from '../../services/msGraphProvider';
+import { IFilePickerResult } from '@pnp/spfx-property-controls';
 
 const popupStyles = mergeStyleSets({
   root: {
@@ -27,7 +28,7 @@ const popupStyles = mergeStyleSets({
   },
 });
 
-export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: WebPartContext, msGraph: msGraphProvider, caracteres: number }> = ({ member, props, msGraph, caracteres }) => {
+export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMembersItem, props: WebPartContext, msGraph: msGraphProvider, caracteres: number, imageModal: IFilePickerResult }> = ({ member, props, msGraph, caracteres, imageModal }) => {
 
   const [isPopupVisible, { setTrue: showPopup, setFalse: hidePopup }] = useBoolean(false);
   const [message, setMessage] = React.useState<string>('');
@@ -70,21 +71,25 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
             <Overlay onClick={hidePopup} />
             <FocusTrapZone forceFocusInsideTrap={true} className={styles.focusTrap}>
               <div role="messageTeams" className={popupStyles.content}>
-                <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
-                <div>
-                  <p>Escreva uma mensagem para enviar via Teams:</p>
-                  <textarea
-                    placeholder="Digite sua mensagem ..."
-                    className={styles.messageTeams}
-                    value={message}
-                    rows={5}
-                    onChange={(e) => {
-                      const text = e.target.value;
-                      setMessage(text.replace(/\s{3,}/g, ' '));
-                      setCharCount(text.replace(/\s{3,}/g, ' ').length); // Atualiza o contador com base no número de caracteres
-                    }}
-                  />
+                <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
+                  <div>
+                    <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
+                    <p>Escreva uma mensagem para enviar via Teams:</p>
+                  </div>
+                  <img src={imageModal.fileAbsoluteUrl} alt={imageModal.fileName} width='100px' className={styles.my1} />
                 </div>
+                <textarea
+                  placeholder="Digite sua mensagem ..."
+                  className={`${styles.messageTeams} ${styles.p0}`}
+                  value={message}
+                  rows={5}
+                  onChange={(e) => {
+                    const text = e.target.value;
+                    setMessage(text.replace(/\s{3,}/g, ' '));
+                    setCharCount(text.replace(/\s{3,}/g, ' ').length); // Atualiza o contador com base no número de caracteres
+                  }}
+                />
+
                 <p className={`${styles.colorTheme} ${styles.fontWeightBold} ${styles.m0}`}>{charCount} / minímo de {caracteres} caracteres</p>
                 <hr className={styles.my2} />
                 <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
