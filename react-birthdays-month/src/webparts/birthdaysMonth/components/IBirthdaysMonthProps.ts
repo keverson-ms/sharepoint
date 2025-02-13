@@ -1,5 +1,6 @@
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 import msGraphProvider from "../../services/msGraphProvider";
+import { IFilePickerResult } from "@pnp/spfx-property-controls";
 
 export interface IBirthdaysMonthProps {
   title: string;
@@ -9,6 +10,7 @@ export interface IBirthdaysMonthProps {
   userDisplayName: string;
   members: IBirthdaysMembersItem[];
   group: string;
+  imageModal: IFilePickerResult;
   absoluteUrl: string;
   overflow: number;
   webPartContext: WebPartContext,

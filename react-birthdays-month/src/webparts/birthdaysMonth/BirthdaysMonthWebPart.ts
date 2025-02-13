@@ -15,11 +15,14 @@ import * as strings from 'BirthdaysMonthWebPartStrings';
 import BirthdaysMonth from './components/BirthdaysMonth';
 import { IBirthdaysMonthProps, IBirthdaysMembersItem, IBirthdaysMembersGroupsItem } from './components/IBirthdaysMonthProps';
 import MsGraphProvider from '../services/msGraphProvider';
+import { IFilePickerResult, PropertyFieldFilePicker } from '@pnp/spfx-property-controls';
+import { SPHttpClient } from '@microsoft/sp-http';
 
 export interface IBirthdaysMonthWebPartProps {
   title: string;
   messageDefault: boolean;
   group: string;
+  imageModal: IFilePickerResult;
   members: IBirthdaysMembersItem[];
   absoluteUrl: string;
   overflow: number;
@@ -55,6 +58,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         userDisplayName: this.context.pageContext.user.displayName,
         members: this.properties.members ?? [],
         group: this.properties.group,
+        imageModal: this.properties.imageModal,
         absoluteUrl: `${this.context.pageContext.web.absoluteUrl}`,
         overflow: this.properties.overflow = (this.properties.overflow ?? this.defaultOverflow),
         webPartContext: this.context,
@@ -164,6 +168,28 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   options: this._groupOptions.length > 0 ? this._groupOptions : [{ key: '', text: 'Carregando...' }],
                   selectedKey: `${this.properties.group}`,
                 }),
+                PropertyFieldFilePicker('imageModal', {
+                  context: this.context,
+                  filePickerResult: this.properties.imageModal,
+                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
+                  properties: this.properties,
+                  hideOneDriveTab: true,
+                  onSave: async (filePickerResult: IFilePickerResult) => {
+                    if (filePickerResult) {
+                      this.properties.imageModal = filePickerResult;
+                      // filePickerResult.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${filePickerResult.fileName}`;
+                      this.uploadImageModal(filePickerResult);
+                    }
+                  },
+                  onChanged: (filePickerResult: IFilePickerResult) => {
+                    this.properties.imageModal = filePickerResult;
+                    console.log(filePickerResult, 'onChanged');
+                  },
+                  key: "filePickerId",
+                  buttonLabel: "Imagem de exibição no modal",
+                  label: "Imagem de exibição no modal",
+                  required: true
+                }),
                 PropertyPaneSlider('overflow', {
                   label: 'Barra de Rolagem',
                   min: this.defaultOverflow,
@@ -188,7 +214,45 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     };
   }
 
+  protected async uploadImageModal(filePickerResult: IFilePickerResult) {
+
+    if (!filePickerResult.fileAbsoluteUrl) {
+      try {
+
+        const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('SiteAssets')/Files/add(url='${filePickerResult.fileName}', overwrite=true)`;
+
+        const fileContent = await filePickerResult.downloadFileContent();
+
+        await this.context.spHttpClient.post(
+          uploadUrl,
+          SPHttpClient.configurations.v1,
+          {
+
+            headers: {
+              'Accept': 'application/json;odata=nometadata',
+              'Content-Type': 'application/octet-stream',
+            },
+            body: fileContent,
+          }
+
+
+        ).then((responseJSON) => {
+          console.log('File created successfully: ', responseJSON.text());
+        })
+          .catch((error) => {
+            console.error('Error creating file:', error);
+          });
+
+      } catch (error) {
+        console.error("Erro ao tentar realizar o upload de imagem: " + error);
+        return;
+      }
+    }
+  }
+
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
+
+
     if (this.properties.group) {
       super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
     }
