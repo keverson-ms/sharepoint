@@ -53,8 +53,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         userDisplayName: this.context.pageContext.user.displayName,
         year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
         items: this.properties.items = (this.properties.items ?? []),
-        totalHoras: this.properties.totalHoras = (this.properties.totalHoras ?? this.getHoras()),
-        totalValores: this.properties.totalValores = (this.properties.totalValores ?? this.getValores()),
+        totalHoras: this.properties.totalHoras = (this.properties.totalHoras ?? `${this.perYears(Number(this.properties.year))?.totalHoras}`),
+        totalValores: this.properties.totalValores = (this.properties.totalValores ?? `${this.perYears(Number(this.properties.year))?.totalValores}`),
       }
     );
 
@@ -92,6 +92,22 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     return this.numberFormat(valores.toString());
   }
 
+  protected perYears(ano: number | null = null): { [ano: string]: { totalHoras: number; totalValores: number } } | { totalHoras: number; totalValores: number } | null {
+
+    const anos: { [ano: string]: { totalHoras: number; totalValores: number } } = {};
+    ano = ano || new Date().getFullYear();
+
+    if (!anos[ano]) {
+      anos[ano] = { totalHoras: 0, totalValores: 0.00 };
+    }
+
+    this.properties.items?.forEach(({ ano, horas, valor }) => {
+      anos[ano].totalHoras += parseFloat(horas.toString());
+      anos[ano].totalValores += parseFloat(valor.toString().replace(/[^\d,]/g, '').replace(',', '.'));
+    });
+
+    return ano ? anos[ano.toString()] : anos;
+  }
 
   private animateCounterUp(): void {
     const elements = this.domElement.querySelectorAll(".counter-up");
@@ -163,10 +179,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       this.properties.year = newValue;
     }
 
-    if (propertyPath !== 'background') {
-      this.properties.totalHoras = this.getHoras();
-      this.properties.totalValores = this.getValores();
-    }
+    this.properties.totalHoras = `${this.perYears(Number(this.properties.year))?.totalHoras}`;
+    this.properties.totalValores = `${this.perYears(Number(this.properties.year))?.totalValores}`;
   }
 
   protected async onInit(): Promise<void> {

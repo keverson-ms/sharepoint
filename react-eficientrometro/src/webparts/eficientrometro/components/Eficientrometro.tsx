@@ -5,6 +5,7 @@ import { Pivot, PivotItem, Label } from 'office-ui-fabric-react';
 // import { Pivot, PivotItem, Label } from '@fluentui/react';
 
 export default class Eficientrometro extends React.Component<IEficientrometroProps> {
+
   public render(): React.ReactElement<IEficientrometroProps> {
     const {
       title,
@@ -29,14 +30,17 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
           <div className={`${styles['ms-Grid-row']}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']}`}>
               <Pivot>
-                <PivotItem headerText="First Tab">
-                  <Label>Content 1</Label>
+                <PivotItem headerText="2026">
+                  <Label>2026</Label>
                 </PivotItem>
-                <PivotItem headerText="Second Tab">
-                  <Label>Content 2</Label>
+                <PivotItem headerText="2025">
+                  <Label>2025</Label>
                 </PivotItem>
-                <PivotItem headerText="Third Tab">
-                  <Label>Content 3</Label>
+                <PivotItem headerText="2024">
+                  <Label>2024</Label>
+                </PivotItem>
+                <PivotItem headerText="2023">
+                  <Label>2023</Label>
                 </PivotItem>
               </Pivot>
             </div>
