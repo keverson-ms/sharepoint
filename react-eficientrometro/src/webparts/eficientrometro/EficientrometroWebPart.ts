@@ -71,11 +71,11 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     this.properties.items?.forEach((item: IEficientrometroCollectionDataProps) => {
       if (!anos[item.ano]) {
-        anos[item.ano] = { ano: item.ano, totalHoras: 0, totalValores: 0.00 };
+        anos[item.ano] = { ano: item.ano, totalHoras: 0, totalValores: 0 };
       }
 
       anos[item.ano].totalHoras += parseFloat(item.horas.toString()) || 0;
-      anos[item.ano].totalValores += parseFloat(item.valor.toString().replace(/[^\d,.]/g, '').replace(',', '.')) || 0.00;
+      anos[item.ano].totalValores += parseFloat(item.valor.toString().replace(/[^\d,]/g, '').replace(',', '.')) || 0;
     });
 
     return Object.keys(anos)
