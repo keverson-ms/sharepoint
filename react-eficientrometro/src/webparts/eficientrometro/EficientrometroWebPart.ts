@@ -69,29 +69,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     // this.animateCounterUp();
   }
 
-  protected getHoras(): string {
-
-    const horas = this.properties.items?.filter((item: { ano: string }) => {
-      return this.properties.year === item.ano;
-    }).map((item: { horas: number }) => item.horas)
-      .reduce((a: number, b: number) => Number(a) + Number(b), 0);
-
-    return horas.toString();
-  }
-
-  protected getValores(): string {
-    const valores = this.properties.items?.filter((item: { ano: string; valor: string | number }) => this.properties.year === item.ano)
-      .map((item: { valor: string | number }) => {
-        const valorString = typeof item.valor === 'string' ? item.valor : item.valor.toString();
-        const valorNumerico = parseFloat(valorString.replace(/[^\d,]/g, '').replace(',', '.'));
-
-        return isNaN(valorNumerico) ? 0 : valorNumerico;
-      })
-      .reduce((a: number, b: number) => a + b, 0);
-
-    return this.numberFormat(valores.toString());
-  }
-
   protected perYears(ano: number | null = null): { [ano: string]: { totalHoras: number; totalValores: number } } | { totalHoras: number; totalValores: number } | null {
 
     const anos: { [ano: string]: { totalHoras: number; totalValores: number } } = {};
