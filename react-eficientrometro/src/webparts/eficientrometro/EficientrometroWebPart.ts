@@ -53,8 +53,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         userDisplayName: this.context.pageContext.user.displayName,
         year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
         items: this.properties.items = (this.properties.items ?? []),
-        totalHoras: this.properties.totalHoras = (this.properties.totalHoras ?? `${this.perYears(Number(this.properties.year))?.totalHoras}`),
-        totalValores: this.properties.totalValores = (this.properties.totalValores ?? `${this.perYears(Number(this.properties.year))?.totalValores}`),
+        totalHoras: this.properties.totalHoras = (this.properties.totalHoras ?? `${this.perYears()?.totalHoras}`),
+        totalValores: this.properties.totalValores = (this.properties.totalValores ?? `${this.perYears()?.totalValores}`),
       }
     );
 
@@ -66,7 +66,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--text-align-center', `${this.properties.textAlignCenter ? 'center' : 'left'}`);
 
     ReactDom.render(element, this.domElement);
-    this.animateCounterUp();
+    // this.animateCounterUp();
   }
 
   protected getHoras(): string {
@@ -95,59 +95,62 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   protected perYears(ano: number | null = null): { [ano: string]: { totalHoras: number; totalValores: number } } | { totalHoras: number; totalValores: number } | null {
 
     const anos: { [ano: string]: { totalHoras: number; totalValores: number } } = {};
-    ano = ano || new Date().getFullYear();
 
-    if (!anos[ano]) {
-      anos[ano] = { totalHoras: 0, totalValores: 0.00 };
-    }
 
     this.properties.items?.forEach(({ ano, horas, valor }) => {
+
+      if (!anos[ano]) {
+        anos[ano] = { totalHoras: 0, totalValores: 0.00 };
+      }
+
       anos[ano].totalHoras += parseFloat(horas.toString());
       anos[ano].totalValores += parseFloat(valor.toString().replace(/[^\d,]/g, '').replace(',', '.'));
     });
 
-    return ano ? anos[ano.toString()] : anos;
+    console.log((ano ? anos[ano.toString()] : anos) ?? { totalHoras: 0, totalValores: 0.00 });
+    
+    return (ano ? anos[ano.toString()] : anos) ?? { totalHoras: 0, totalValores: 0.00 };
   }
 
-  private animateCounterUp(): void {
-    const elements = this.domElement.querySelectorAll(".counter-up");
+  // private animateCounterUp(): void {
+  //   const elements = this.domElement.querySelectorAll(".counter-up");
 
-    return elements.forEach((element: Element) => {
-      setTimeout(() => {
-        const value = parseFloat(element.getAttribute('data-value')?.toString() || '0');
-        element.textContent = value.toString();
+  //   return elements.forEach((element: Element) => {
+  //     setTimeout(() => {
+  //       const value = parseFloat(element.getAttribute('data-value')?.toString() || '0');
+  //       element.textContent = value.toString();
 
-        if (!isNaN(value)) {
-          const startValue = 0;
-          const duration = 10000; // Duração da animação em milissegundos
-          let startTime: number | null = null;
+  //       if (!isNaN(value)) {
+  //         const startValue = 0;
+  //         const duration = 10000; // Duração da animação em milissegundos
+  //         let startTime: number | null = null;
 
-          const animate = (currentTime: number) => {
-            if (!startTime) {
-              startTime = currentTime;
-            }
+  //         const animate = (currentTime: number) => {
+  //           if (!startTime) {
+  //             startTime = currentTime;
+  //           }
 
-            const progress = Math.min((currentTime - startTime) / duration, 1);
-            const currentValue = startValue + (value - startValue) * progress;
+  //           const progress = Math.min((currentTime - startTime) / duration, 1);
+  //           const currentValue = startValue + (value - startValue) * progress;
 
-            const formattedValue = (value % 1 === 0) && !element.getAttribute('data-money')
-              ? Math.ceil(currentValue).toLocaleString("pt-BR").replace('.', '')
-              : (currentValue).toLocaleString("pt-BR", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              });
+  //           const formattedValue = (value % 1 === 0) && !element.getAttribute('data-money')
+  //             ? Math.ceil(currentValue).toLocaleString("pt-BR").replace('.', '')
+  //             : (currentValue).toLocaleString("pt-BR", {
+  //               minimumFractionDigits: 2,
+  //               maximumFractionDigits: 2,
+  //             });
 
-            element.textContent = formattedValue;
+  //           element.textContent = formattedValue;
 
-            if (progress < 1) {
-              return requestAnimationFrame(animate);
-            }
-          };
-          return requestAnimationFrame(animate);
-        }
-      }, 250);
-    });
-  }
+  //           if (progress < 1) {
+  //             return requestAnimationFrame(animate);
+  //           }
+  //         };
+  //         return requestAnimationFrame(animate);
+  //       }
+  //     }, 250);
+  //   });
+  // }
 
   protected async onPropertyChange(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
     super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
@@ -179,8 +182,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       this.properties.year = newValue;
     }
 
-    this.properties.totalHoras = `${this.perYears(Number(this.properties.year))?.totalHoras}`;
-    this.properties.totalValores = `${this.perYears(Number(this.properties.year))?.totalValores}`;
+    this.properties.totalHoras = `${this.perYears()?.totalHoras}`;
+    this.properties.totalValores = `${this.perYears()?.totalValores}`;
   }
 
   protected async onInit(): Promise<void> {
