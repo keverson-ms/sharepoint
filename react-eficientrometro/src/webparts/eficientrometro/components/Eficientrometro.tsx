@@ -18,7 +18,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={`${styles['ms-Grid']}`}>
-          <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']}`}>
+          <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']} ${styles.mb1}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md3']} ${styles['ms-lg3']} ${isDarkTheme ? '' : styles.filterInverted}`}>
               <img alt="" src={this.props.color ? require('../assets/marca_sistema_branca.png') : require('../assets/marca_sistema_preta.png')} className={styles.welcomeImage} />
             </div>
@@ -37,7 +37,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
                           <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
                             <span className={styles.prefixValue}>R$</span> <span className={`counter-up ${styles.valores}`} data-value={item.totalValores} data-money>{item.totalValores}</span>
                           </div>
-                          <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
+                          <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao} ${styles.mb1}`}>
                             Economia gerada em <span className={`counter-up`} data-value={item.ano.toString()}>{item.ano.toString()}</span> (acumulada)
                           </div>
                         </div>
@@ -45,7 +45,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
                           <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
                             <span className={`counter-up ${styles.valores}`} data-value={item.totalHoras}>{item.totalHoras}</span> <span className={styles.prefixValue}>hs</span>
                           </div>
-                          <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
+                          <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao} ${styles.mb1}`}>
                             Ganho de Produtividade Operacional
                           </div>
                         </div>

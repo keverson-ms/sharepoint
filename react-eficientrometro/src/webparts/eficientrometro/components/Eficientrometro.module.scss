@@ -94,6 +94,10 @@
   padding: 3em;
 }
 
+.mb1 {
+  margin-bottom: .5rem !important;
+}
+
 .descricao {
   padding: 0.5em;
   color: var(--text-valores);
@@ -122,6 +126,22 @@
       width: 100% !important;
       padding: 0;
       margin: 0;
+      filter: grayscale(0.75);
+      color: var(--text-valores);
+
+      &:not(.is-selected) {
+        background-color: var(--background-valores);
+      }
+
+      &.is-selected {
+        font-weight: bold;
+        background-color: transparent !important;
+        color: var(--text-valores);
+      }
+
+      &:not(:last-child, :first-child) {
+        margin-right: .5em;
+      }
     }
   }
 }
