@@ -6,14 +6,13 @@ import {
   PropertyPaneTextField,
   PropertyPaneSlider,
   PropertyPaneToggle,
-  PropertyPaneDropdown,
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
 
 import * as strings from 'EficientrometroWebPartStrings';
 import Eficientrometro from './components/Eficientrometro';
-import { IEficientrometroCollectionDataProps, IEficientrometroProps } from './components/IEficientrometroProps';
+import { IEficientrometroCollectionDataListProps, IEficientrometroCollectionDataProps, IEficientrometroCollectionDataYearsProps, IEficientrometroProps } from './components/IEficientrometroProps';
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
 import { PropertyFieldCollectionData, CustomCollectionFieldType } from '@pnp/spfx-property-controls/lib/PropertyFieldCollectionData';
 import { TextField } from "office-ui-fabric-react/lib/TextField";
@@ -27,9 +26,7 @@ export interface IEficientrometroWebPartProps {
   textAlignCenter: boolean;
   color: boolean;
   items: IEficientrometroCollectionDataProps[] | [];
-  year: string;
-  totalHoras: string;
-  totalValores: string;
+  years: IEficientrometroCollectionDataYearsProps[] | [];
 }
 
 export default class EficientrometroWebPart extends BaseClientSideWebPart<IEficientrometroWebPartProps> {
@@ -51,10 +48,8 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
-        year: this.properties.year = (this.properties.year ?? (new Date().getFullYear().toString())),
         items: this.properties.items = (this.properties.items ?? []),
-        totalHoras: this.properties.totalHoras = (this.properties.totalHoras ?? `${this.perYears()?.totalHoras}`),
-        totalValores: this.properties.totalValores = (this.properties.totalValores ?? `${this.perYears()?.totalValores}`),
+        years: this.properties.years = this.perYears() as IEficientrometroCollectionDataYearsProps[] | []
       }
     );
 
@@ -65,69 +60,73 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.domElement.style.setProperty('--prefixValue', `${this.properties.valueBlockFontSize / 2}em`);
     this.domElement.style.setProperty('--text-align-center', `${this.properties.textAlignCenter ? 'center' : 'left'}`);
 
+
     ReactDom.render(element, this.domElement);
-    // this.animateCounterUp();
+    this.animateCounterUp();
+    this.getYears();
   }
 
-  protected perYears(ano: number | null = null): { [ano: string]: { totalHoras: number; totalValores: number } } | { totalHoras: number; totalValores: number } | null {
+  protected perYears(): IEficientrometroCollectionDataYearsProps[] {
+    const anos: IEficientrometroCollectionDataListProps = {};
 
-    const anos: { [ano: string]: { totalHoras: number; totalValores: number } } = {};
-
-
-    this.properties.items?.forEach(({ ano, horas, valor }) => {
-
-      if (!anos[ano]) {
-        anos[ano] = { totalHoras: 0, totalValores: 0.00 };
+    this.properties.items?.forEach((item: IEficientrometroCollectionDataProps) => {
+      if (!anos[item.ano]) {
+        anos[item.ano] = { ano: item.ano, totalHoras: 0, totalValores: 0.00 };
       }
 
-      anos[ano].totalHoras += parseFloat(horas.toString());
-      anos[ano].totalValores += parseFloat(valor.toString().replace(/[^\d,]/g, '').replace(',', '.'));
+      anos[item.ano].totalHoras += parseFloat(item.horas.toString()) || 0;
+      anos[item.ano].totalValores += parseFloat(item.valor.toString().replace(/[^\d,.]/g, '').replace(',', '.')) || 0.00;
     });
 
-    console.log((ano ? anos[ano.toString()] : anos) ?? { totalHoras: 0, totalValores: 0.00 });
-    
-    return (ano ? anos[ano.toString()] : anos) ?? { totalHoras: 0, totalValores: 0.00 };
+    return Object.keys(anos)
+      .map(ano => ({
+        ano: parseInt(ano),
+        totalHoras: anos[parseInt(ano)].totalHoras,
+        totalValores: anos[parseInt(ano)].totalValores
+      }))
+      .sort((a, b) => b.ano - a.ano); // Ordena por ano de forma decrescente
   }
 
-  // private animateCounterUp(): void {
-  //   const elements = this.domElement.querySelectorAll(".counter-up");
 
-  //   return elements.forEach((element: Element) => {
-  //     setTimeout(() => {
-  //       const value = parseFloat(element.getAttribute('data-value')?.toString() || '0');
-  //       element.textContent = value.toString();
+  private animateCounterUp(): void {
+    const elements = this.domElement.querySelectorAll(".counter-up");
 
-  //       if (!isNaN(value)) {
-  //         const startValue = 0;
-  //         const duration = 10000; // Duração da animação em milissegundos
-  //         let startTime: number | null = null;
+    return elements.forEach((element: Element) => {
+      setTimeout(() => {
+        const value = parseFloat(element.getAttribute('data-value')?.toString() || '0');
+        element.textContent = value.toString();
 
-  //         const animate = (currentTime: number) => {
-  //           if (!startTime) {
-  //             startTime = currentTime;
-  //           }
+        if (!isNaN(value)) {
+          const startValue = 0;
+          const duration = 10000; // Duração da animação em milissegundos
+          let startTime: number | null = null;
 
-  //           const progress = Math.min((currentTime - startTime) / duration, 1);
-  //           const currentValue = startValue + (value - startValue) * progress;
+          const animate = (currentTime: number) => {
+            if (!startTime) {
+              startTime = currentTime;
+            }
 
-  //           const formattedValue = (value % 1 === 0) && !element.getAttribute('data-money')
-  //             ? Math.ceil(currentValue).toLocaleString("pt-BR").replace('.', '')
-  //             : (currentValue).toLocaleString("pt-BR", {
-  //               minimumFractionDigits: 2,
-  //               maximumFractionDigits: 2,
-  //             });
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const currentValue = startValue + (value - startValue) * progress;
 
-  //           element.textContent = formattedValue;
+            const formattedValue = (value % 1 === 0) && !element.getAttribute('data-money')
+              ? Math.ceil(currentValue).toLocaleString("pt-BR").replace('.', '')
+              : (currentValue).toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              });
 
-  //           if (progress < 1) {
-  //             return requestAnimationFrame(animate);
-  //           }
-  //         };
-  //         return requestAnimationFrame(animate);
-  //       }
-  //     }, 250);
-  //   });
-  // }
+            element.textContent = formattedValue;
+
+            if (progress < 1) {
+              return requestAnimationFrame(animate);
+            }
+          };
+          return requestAnimationFrame(animate);
+        }
+      }, 250);
+    });
+  }
 
   protected async onPropertyChange(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
     super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
@@ -154,13 +153,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   }
 
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
-
-    if (propertyPath === "year" && newValue !== oldValue) {
-      this.properties.year = newValue;
-    }
-
-    this.properties.totalHoras = `${this.perYears()?.totalHoras}`;
-    this.properties.totalValores = `${this.perYears()?.totalValores}`;
+    this.perYears();
   }
 
   protected async onInit(): Promise<void> {
@@ -371,11 +364,6 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
                   label: 'Alinhar texto ao centro',
                   checked: this.properties.textAlignCenter,
                   inlineLabel: true
-                }),
-                PropertyPaneDropdown('year', {
-                  label: 'Exibir dados do ano de: ',
-                  options: this.getYears(),
-                  selectedKey: this.properties.year,
                 }),
                 PropertyFieldColorPicker('background', {
                   label: 'Cor de Fundo dos valores',
