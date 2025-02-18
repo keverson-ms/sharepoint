@@ -179,7 +179,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   onSave: async (filePickerResult: IFilePickerResult) => {
                     if (filePickerResult) {
                       this.properties.imageModal = filePickerResult;
-                      // filePickerResult.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${filePickerResult.fileName}`;
                       this.uploadImageModal(filePickerResult);
                     }
                   },
