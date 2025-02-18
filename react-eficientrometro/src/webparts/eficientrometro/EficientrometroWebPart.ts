@@ -34,9 +34,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
-  public async render(): Promise<void> {
-
-    this.properties.years = await this.perYears();
+  public render(): void {
 
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
@@ -51,7 +49,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         items: this.properties.items = (this.properties.items ?? []),
-        years: this.properties.years,
+        years: this.properties.years = this.perYears(),
       }
     );
 
@@ -67,7 +65,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     this.animateCounterUp();
   }
 
-  public async perYears(): Promise<IEficientrometroCollectionDataYearsProps[]> {
+  public perYears(): IEficientrometroCollectionDataYearsProps[] {
     const anos: IEficientrometroCollectionDataListProps = {};
 
     this.properties.items?.forEach((item: IEficientrometroCollectionDataProps) => {

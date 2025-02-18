@@ -29,7 +29,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles.p0}`}>
               <Pivot className={styles.yearsTabs}>
                 ({years.map((item: IEficientrometroCollectionDataYearsProps) =>
-                  <PivotItem headerText={item.ano.toString()}>
+                  <PivotItem headerText={item.ano.toString()} key={item.ano}>
                     <Label>
                       <div className={styles['ms-Grid-row']}>
                         <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
