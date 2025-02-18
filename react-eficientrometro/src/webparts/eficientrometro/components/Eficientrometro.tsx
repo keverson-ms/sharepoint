@@ -17,7 +17,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={`${styles['ms-Grid']}`}>
-          <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']} ${styles.m0} ${styles.mb1}`}>
+          <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']} ${styles.mb1}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md3']} ${styles['ms-lg3']} ${isDarkTheme ? '' : styles.filterInverted}`}>
               <img alt="" src={this.props.color ? require('../assets/marca_sistema_branca.png') : require('../assets/marca_sistema_preta.png')} className={styles.welcomeImage} />
             </div>
@@ -26,7 +26,7 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
             </div>
           </div>
           <div className={`${styles['ms-Grid-row']}`}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']}`}>
+            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles.p0}`}>
               <Pivot className={styles.yearsTabs}>
                 ({years.map((item: IEficientrometroCollectionDataYearsProps) =>
                   <PivotItem headerText={item.ano.toString()}>

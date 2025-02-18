@@ -98,6 +98,10 @@
   margin: 0;
 }
 
+.p0 {
+  padding: 0;
+}
+
 .mb1 {
   margin-bottom: .5rem !important;
 }
@@ -112,7 +116,6 @@
 
 .background-logo {
   background-color: var(--background-valores);
-  margin: 0.1rem;
   filter: saturate(0.5);
 }
 
