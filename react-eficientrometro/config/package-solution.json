@@ -3,7 +3,7 @@
   "solution": {
     "name": "eficientrometro-client-side-solution",
     "id": "6677f5fd-4224-492d-adbb-7087b6fb2515",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -30,7 +30,7 @@
         "title": "eficientrometro Feature",
         "description": "The feature that activates elements of the eficientrometro solution.",
         "id": "c7a25a3e-76c6-4147-b425-767d1d3fd9cb",
-        "version": "1.0.0.0"
+        "version": "1.1.0.0"
       }
     ]
   },
