@@ -102,7 +102,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
           const duration = 10000; // Duração da animação em milissegundos
           let startTime: number | null = null;
 
-          const animate = (currentTime: number) => {
+          const animate = (currentTime: number): number | undefined => {
             if (!startTime) {
               startTime = currentTime;
             }
