@@ -34,7 +34,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
 
-  public render(): void {
+  public async render(): Promise<void> {
+
+    this.properties.years = await this.perYears();
 
     const element: React.ReactElement<IEficientrometroProps> = React.createElement(
       Eficientrometro,
@@ -49,7 +51,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
         userDisplayName: this.context.pageContext.user.displayName,
         items: this.properties.items = (this.properties.items ?? []),
-        years: this.properties.years = this.perYears() as IEficientrometroCollectionDataYearsProps[] | []
+        years: this.properties.years,
       }
     );
 
@@ -63,10 +65,9 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
 
     ReactDom.render(element, this.domElement);
     this.animateCounterUp();
-    this.getYears();
   }
 
-  protected perYears(): IEficientrometroCollectionDataYearsProps[] {
+  public async perYears(): Promise<IEficientrometroCollectionDataYearsProps[]> {
     const anos: IEficientrometroCollectionDataListProps = {};
 
     this.properties.items?.forEach((item: IEficientrometroCollectionDataProps) => {
@@ -78,13 +79,15 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
       anos[item.ano].totalValores += parseFloat(item.valor.toString().replace(/[^\d,]/g, '').replace(',', '.')) || 0;
     });
 
-    return Object.keys(anos)
+    const _perYears = Object.keys(anos)
       .map(ano => ({
         ano: parseInt(ano),
         totalHoras: anos[parseInt(ano)].totalHoras,
         totalValores: anos[parseInt(ano)].totalValores
       }))
-      .sort((a, b) => b.ano - a.ano); // Ordena por ano de forma decrescente
+      .sort((a, b) => b.ano - a.ano);
+
+    return _perYears;
   }
 
 
@@ -150,9 +153,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
     }
 
     this.properties.color = (this.getContrastColor(this.properties.background ?? this.domElement.style.getPropertyValue('--link')) === 'black' ? true : false);
-  }
 
-  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): void {
     this.perYears();
   }
 

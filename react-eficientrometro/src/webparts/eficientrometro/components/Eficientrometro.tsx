@@ -14,11 +14,10 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
       hasTeamsContext,
     } = this.props;
 
-    console.log(typeof years, years);
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={`${styles['ms-Grid']}`}>
-          <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']} ${styles.mb1}`}>
+          <div className={`${styles['ms-Grid-row']} ${styles['d-flex']} ${styles['align-items-center']} ${styles['background-logo']} ${styles.m0} ${styles.mb1}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md3']} ${styles['ms-lg3']} ${isDarkTheme ? '' : styles.filterInverted}`}>
               <img alt="" src={this.props.color ? require('../assets/marca_sistema_branca.png') : require('../assets/marca_sistema_preta.png')} className={styles.welcomeImage} />
             </div>
@@ -56,24 +55,6 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
               </Pivot>
             </div>
           </div>
-          {/* <div className={styles['ms-Grid-row']}>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
-              <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
-                <span className={styles.prefixValue}>R$</span> <span className={`counter-up ${styles.valores}`} data-value={2.011} data-money>{2.011}</span>
-              </div>
-              <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
-                Economia gerada em <span className={`counter-up`} data-value={new Date().getFullYear()}>{new Date().getFullYear()}</span> (acumulada)
-              </div>
-            </div>
-            <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
-              <div className={`${styles.valueBlockFontSize} ${styles['ms-fontWeight-bold']}`}>
-                <span className={`counter-up ${styles.valores}`} data-value={200}>{200}</span> <span className={styles.prefixValue}>hs</span>
-              </div>
-              <div className={`${styles['ms-fontWeight-bold']} ${styles['ms-fontSize-16']} ${styles.descricao}`}>
-                Ganho de Produtividade Operacional
-              </div>
-            </div>
-          </div> */}
         </div>
       </section>
     );
