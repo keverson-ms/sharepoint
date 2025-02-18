@@ -176,19 +176,19 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
                   properties: this.properties,
                   hideOneDriveTab: true,
-                  onSave: async (filePickerResult: IFilePickerResult) => {
-                    if (filePickerResult) {
-                      this.properties.imageModal = filePickerResult;
-                      this.uploadImageModal(filePickerResult);
+                  onSave: (e: IFilePickerResult) => {
+                    if (e.fileName) {
+                      this.properties.imageModal = e;
+                      this.uploadImageModal(e);
                     }
+                    console.log('e: ', e, 'imageModal: ', this.properties.imageModal);
                   },
-                  onChanged: (filePickerResult: IFilePickerResult) => {
-                    this.properties.imageModal = filePickerResult;
-                    console.log(filePickerResult, 'onChanged');
+                  onChanged: (e) => {
+                    this.properties.imageModal = e;
                   },
-                  key: "filePickerId",
-                  buttonLabel: "Imagem de exibição no modal",
-                  label: "Imagem de exibição no modal",
+                  key: "imageModal",
+                  buttonLabel: "Selecione o arquivo",
+                  label: "arquivo",
                   required: true
                 }),
                 PropertyPaneSlider('overflow', {
@@ -215,13 +215,13 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     };
   }
 
-  protected async uploadImageModal(filePickerResult: IFilePickerResult) {
+  protected async uploadImageModal(filePickerResult: IFilePickerResult): Promise<void> {
 
     if (!filePickerResult.fileAbsoluteUrl) {
       try {
 
+        filePickerResult.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${filePickerResult.fileName}`;
         const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('SiteAssets')/Files/add(url='${filePickerResult.fileName}', overwrite=true)`;
-
         const fileContent = await filePickerResult.downloadFileContent();
 
         await this.context.spHttpClient.post(
@@ -230,8 +230,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
           {
 
             headers: {
-              'Accept': 'application/json;odata=nometadata',
-              'Content-Type': 'application/octet-stream',
+              'Accept': 'application/json;odata=verbose',
+              'Content-Type': 'application/json',
             },
             body: fileContent,
           }
