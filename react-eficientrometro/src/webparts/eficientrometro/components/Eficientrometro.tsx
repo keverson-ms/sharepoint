@@ -25,8 +25,6 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
       hasTeamsContext,
     } = this.props;
 
-    console.log(this.props);
-
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
         <div className={`${styles['ms-Grid']}`}>
