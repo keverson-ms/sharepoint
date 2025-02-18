@@ -51,7 +51,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
     const element: React.ReactElement<IBirthdaysMonthProps> = React.createElement(
       BirthdaysMonth,
       {
-        title: this.properties.title = (this.properties.messageDefault || !this.properties.title ? (this.properties.title = 'Aniversariantes do Mês - ' + getMonth().replace(/^\w/, (c) => c.toUpperCase())) : this.properties.title),
+        title: this.properties.title = (this.properties.messageDefault || !this.properties.title ? (this.properties.title = 'Aniversariantes') : this.properties.title),
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -63,7 +63,9 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         overflow: this.properties.overflow = (this.properties.overflow ?? this.defaultOverflow),
         webPartContext: this.context,
         msGraph: this.msGraphProvider,
-        caracteres: this.properties.caracteres = (this.properties.caracteres ?? this.minCaracteres)
+        caracteres: this.properties.caracteres = (this.properties.caracteres ?? this.minCaracteres),
+        messageDefault: this.properties.messageDefault,
+        month: getMonth().replace(/^\w/, (c) => c.toUpperCase())
       }
     );
 
@@ -161,7 +163,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                 PropertyPaneTextField('title', {
                   label: strings.TitleSectionFieldLabel,
                   value: this.properties.title,
-                  disabled: this.properties.messageDefault
+                  disabled: this.properties.messageDefault,
                 }),
                 PropertyPaneDropdown('group', {
                   label: strings.GroupAzureFieldLabel,

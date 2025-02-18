@@ -15,7 +15,9 @@ export interface IBirthdaysMonthProps {
   overflow: number;
   webPartContext: WebPartContext,
   msGraph: msGraphProvider,
-  caracteres: number
+  caracteres: number,
+  messageDefault: boolean,
+  month: string
 }
 
 export interface IBirthdaysMembersItem {

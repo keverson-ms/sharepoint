@@ -16,14 +16,16 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
       absoluteUrl,
       hasTeamsContext,
       webPartContext,
-      msGraph
+      messageDefault,
+      msGraph,
+      month,
     } = this.props;
 
     return (
       <section className={`${styles.birthdaysMonth} ${hasTeamsContext ? styles.teams : ''}`}>
         {this.props.title && (
           <>
-            <h2 className={styles.title}>{this.props.title}</h2>
+            <h2 className={styles.title}>{messageDefault ? this.props.title + ' - ' + month : this.props.title}</h2>
             <hr />
           </>
         )}
