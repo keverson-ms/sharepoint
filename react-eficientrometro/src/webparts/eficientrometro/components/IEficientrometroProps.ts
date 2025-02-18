@@ -10,6 +10,7 @@ export interface IEficientrometroProps {
   color: boolean;
   items: IEficientrometroCollectionDataProps[] | [];
   years: IEficientrometroCollectionDataYearsProps[] | [];
+  animateCounterUp: () => void;
 }
 
 export interface IEficientrometroCollectionDataProps {

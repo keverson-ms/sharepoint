@@ -50,6 +50,7 @@ export default class EficientrometroWebPart extends BaseClientSideWebPart<IEfici
         userDisplayName: this.context.pageContext.user.displayName,
         items: this.properties.items = (this.properties.items ?? []),
         years: this.properties.years = this.perYears(),
+        animateCounterUp: this.animateCounterUp.bind(this)
       }
     );
 

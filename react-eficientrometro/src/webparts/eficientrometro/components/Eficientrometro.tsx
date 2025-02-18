@@ -2,9 +2,20 @@ import * as React from 'react';
 import styles from './Eficientrometro.module.scss';
 import type { IEficientrometroCollectionDataYearsProps, IEficientrometroProps } from './IEficientrometroProps';
 import { Pivot, PivotItem, Label } from 'office-ui-fabric-react';
-// import { Pivot, PivotItem, Label } from '@fluentui/react';
 
 export default class Eficientrometro extends React.Component<IEficientrometroProps> {
+
+  protected active: string = new Date().getFullYear().toString();
+
+  private handleTabClick = (item?: PivotItem): void => {
+
+    this.active = item?.props?.headerText ?? new Date().getFullYear().toString();
+    if (item) {
+      setTimeout(() => {
+        (this.props.animateCounterUp as () => void)();
+      }, 0);
+    }
+  };
 
   public render(): React.ReactElement<IEficientrometroProps> {
     const {
@@ -13,6 +24,8 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
       isDarkTheme,
       hasTeamsContext,
     } = this.props;
+
+    console.log(this.props);
 
     return (
       <section className={`${styles.eficientrometro} ${hasTeamsContext ? styles.teams : ''}`}>
@@ -27,9 +40,9 @@ export default class Eficientrometro extends React.Component<IEficientrometroPro
           </div>
           <div className={`${styles['ms-Grid-row']}`}>
             <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles.p0}`}>
-              <Pivot className={styles.yearsTabs}>
+              <Pivot className={styles.yearsTabs} onLinkClick={this.handleTabClick} defaultSelectedKey={this.active}>
                 ({years.map((item: IEficientrometroCollectionDataYearsProps) =>
-                  <PivotItem headerText={item.ano.toString()} key={item.ano}>
+                  <PivotItem headerText={item.ano.toString()} key={item.ano} itemKey={item.ano.toString()}>
                     <Label>
                       <div className={styles['ms-Grid-row']}>
                         <div className={`${styles['ms-Grid-col']} ${styles['ms-sm12']} ${styles['ms-md12']} ${styles['ms-lg12']} ${styles['ms-xl6']}`}>
