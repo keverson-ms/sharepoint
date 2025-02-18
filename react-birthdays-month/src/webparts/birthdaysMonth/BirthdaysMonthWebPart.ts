@@ -181,7 +181,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                       this.properties.imageModal = e;
                       this.uploadImageModal(e);
                     }
-                    console.log('e: ', e, 'imageModal: ', this.properties.imageModal);
                   },
                   onChanged: (e) => {
                     this.properties.imageModal = e;
