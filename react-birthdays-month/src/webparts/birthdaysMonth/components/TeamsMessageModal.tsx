@@ -70,8 +70,8 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
           <Popup className={popupStyles.root} role="dialog" aria-modal="true" onDismiss={hidePopup}>
             <Overlay onClick={hidePopup} />
             <FocusTrapZone forceFocusInsideTrap={true} className={styles.focusTrap}>
-              <div role="messageTeams" className={popupStyles.content}>
-                <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
+              <div role="messageTeams" className={`${popupStyles.content} ${styles.content}`}>
+                <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween} ${styles.pageHeader}`}>
                   <div>
                     <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
                     <p>Escreva uma mensagem para enviar via Teams:</p>
