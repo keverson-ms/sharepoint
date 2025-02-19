@@ -17,6 +17,7 @@ import { IBirthdaysMonthProps, IBirthdaysMembersItem, IBirthdaysMembersGroupsIte
 import MsGraphProvider from '../services/msGraphProvider';
 import { IFilePickerResult, PropertyFieldFilePicker } from '@pnp/spfx-property-controls';
 import { SPHttpClient } from '@microsoft/sp-http';
+import { FilePickerTabType } from '@pnp/spfx-property-controls/lib/propertyFields/filePicker/filePickerControls/FilePicker.types';
 
 export interface IBirthdaysMonthWebPartProps {
   title: string;
@@ -176,8 +177,11 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
                   properties: this.properties,
                   hideOneDriveTab: true,
+                  hideStockImages: true,
+                  defaultSelectedTab: FilePickerTabType.SiteFilesTab,
                   onSave: (e: IFilePickerResult) => {
                     if (e.fileName) {
+                      // e.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${e.fileName}`;
                       this.properties.imageModal = e;
                       this.uploadImageModal(e);
                     }
@@ -185,10 +189,11 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   onChanged: (e) => {
                     this.properties.imageModal = e;
                   },
-                  key: "imageModal",
+                  key: "deleteFile",
                   buttonLabel: "Selecione o arquivo",
                   label: "arquivo",
-                  required: true
+                  required: true,
+                  accepts: ['image/*']
                 }),
                 PropertyPaneSlider('overflow', {
                   label: 'Barra de Rolagem',
@@ -218,9 +223,9 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     if (!filePickerResult.fileAbsoluteUrl) {
       try {
-
         filePickerResult.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${filePickerResult.fileName}`;
-        const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('SiteAssets')/Files/add(url='${filePickerResult.fileName}', overwrite=true)`;
+        const uploadUrl = `${this.context.pageContext.web.absoluteUrl}/_api/web/GetFolderByServerRelativeUrl('SiteAssets')/Files/add(url='${encodeURIComponent(filePickerResult.fileName)}',overwrite=true)`;
+
         const fileContent = await filePickerResult.downloadFileContent();
 
         await this.context.spHttpClient.post(
@@ -230,7 +235,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
             headers: {
               'Accept': 'application/json;odata=verbose',
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/octet-stream',
             },
             body: fileContent,
           }
@@ -238,6 +243,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
         ).then((responseJSON) => {
           console.log('File created successfully: ', responseJSON.text());
+          filePickerResult.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${filePickerResult.fileName}`;
         })
           .catch((error) => {
             console.error('Error creating file:', error);
