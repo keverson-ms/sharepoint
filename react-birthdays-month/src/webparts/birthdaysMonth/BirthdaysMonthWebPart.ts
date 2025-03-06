@@ -79,6 +79,10 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     this._groupOptions = await this.msGraphProvider._fetchGroups(this.context);
 
+    if (this.properties.group) {
+      await this.onPropertyPaneFieldChanged.bind(this);
+    }
+
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
     });
