@@ -17,6 +17,7 @@ export interface IBirthdaysMonthProps {
   msGraph: msGraphProvider,
   caracteres: number,
   messageDefault: boolean,
+  order: boolean,
   month: string
 }
 

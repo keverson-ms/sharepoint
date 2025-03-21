@@ -22,6 +22,7 @@ import { FilePickerTabType } from '@pnp/spfx-property-controls/lib/propertyField
 export interface IBirthdaysMonthWebPartProps {
   title: string;
   messageDefault: boolean;
+  order: boolean;
   group: string;
   imageModal: IFilePickerResult;
   members: IBirthdaysMembersItem[];
@@ -66,6 +67,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
         msGraph: this.msGraphProvider,
         caracteres: this.properties.caracteres = (this.properties.caracteres ?? this.minCaracteres),
         messageDefault: this.properties.messageDefault,
+        order: this.properties.order,
         month: getMonth().replace(/^\w/, (c) => c.toUpperCase())
       }
     );
@@ -79,9 +81,9 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     this._groupOptions = await this.msGraphProvider._fetchGroups(this.context);
 
-    if (this.properties.group) {
-      await this.onPropertyPaneFieldChanged.bind(this);
-    }
+    // if (this.properties.group) {
+    //   await this.onPropertyPaneFieldChanged.bind(this);
+    // }
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -165,6 +167,14 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   onAriaLabel: 'Y',
                   offAriaLabel: 'N'
                 }),
+                PropertyPaneToggle('order', {
+                  label: strings.OrderFieldLabel,
+                  checked: this.properties.title && this.properties.order ? true : false,
+                  onText: 'Crescente',
+                  offText: 'Decrescente',
+                  onAriaLabel: 'Y',
+                  offAriaLabel: 'N',
+                }),
                 PropertyPaneTextField('title', {
                   label: strings.TitleSectionFieldLabel,
                   value: this.properties.title,
@@ -183,11 +193,10 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   hideOneDriveTab: true,
                   hideStockImages: true,
                   defaultSelectedTab: FilePickerTabType.SiteFilesTab,
-                  onSave: (e: IFilePickerResult) => {
+                  onSave: async (e: IFilePickerResult) => {
                     if (e.fileName) {
-                      // e.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${e.fileName}`;
                       this.properties.imageModal = e;
-                      this.uploadImageModal(e);
+                      await this.uploadImageModal(e);
                     }
                   },
                   onChanged: (e) => {
@@ -267,6 +276,11 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
       super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
     }
 
+    if (newValue !== oldValue || (propertyPath === 'order' && this.properties.order)) {
+      this.properties.members = this.properties.members.reverse();
+      this.render();
+    }
+
     if (propertyPath === "overflow" && newValue !== oldValue) {
       this.domElement.style.setProperty('--overflow', `${this.properties.overflow ?? 0}px`);
     }
@@ -276,6 +290,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
       this.properties.members = await this.msGraphProvider._fetchGroupMembers(newValue, this.context);
       this.render();
     }
+
   }
 
 }

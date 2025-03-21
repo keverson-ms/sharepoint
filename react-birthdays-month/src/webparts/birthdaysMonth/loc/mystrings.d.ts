@@ -3,6 +3,7 @@ declare interface IBirthdaysMonthWebPartStrings {
   BasicGroupName: string;
   TitleSectionFieldLabel: string;
   MessageDefaultFieldLabel: string;
+  OrderFieldLabel: string;
   GroupAzureFieldLabel: string;
   AppLocalEnvironmentSharePoint: string;
   AppLocalEnvironmentTeams: string;

@@ -35,18 +35,20 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
   const [charCount, setCharCount] = React.useState<number>(0);
   const [notification, setNotification] = React.useState<{ type: MessageBarType, text: string } | null>(null);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (): Promise<void> => {
     const messageToSend = message.trim().replace(/\s{3,}/g, ' ');
 
     try {
 
-      await msGraph.sendBirthdayMessage(member.mail, props, messageToSend);
+      if (messageToSend) {
+        await msGraph.sendBirthdayMessage(member.mail, props, messageToSend);
+      }
 
       setMessage('');
       hidePopup();
-      return setNotification({ type: MessageBarType.success, text: '🎉 Mensagem enviada com sucesso!' });
+      setNotification({ type: MessageBarType.success, text: '🎉 Mensagem enviada com sucesso!' });
     } catch (error) {
-      setMessage(messageToSend);
+      setMessage(error);
       setNotification({ type: MessageBarType.error, text: '❌ Erro ao enviar mensagem.' });
     }
 
@@ -76,7 +78,9 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
                     <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
                     <p>Escreva uma mensagem para enviar via Teams:</p>
                   </div>
-                  <img src={imageModal.fileAbsoluteUrl} alt={imageModal.fileName} width='100px' className={styles.my1} />
+                  {imageModal.fileAbsoluteUrl && (
+                    <img src={imageModal.fileAbsoluteUrl} alt={imageModal.fileName} width='100px' className={styles.my1} />
+                  )}
                 </div>
                 <textarea
                   placeholder="Digite sua mensagem ..."
@@ -94,7 +98,7 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
                 <hr className={styles.my2} />
                 <div className={`${styles.dflex} ${styles.justifyContentSpaceBetween}`}>
                   <DefaultButton className='btnDanger' onClick={hidePopup} iconProps={{ iconName: 'ChromeClose' }}>Fechar</DefaultButton>
-                  <DefaultButton className='btnSucess' onClick={handleSendMessage} iconProps={{ iconName: 'Send' }} disabled={message.replace(/\s{3,}/g, ' ').length < caracteres}>Enviar</DefaultButton>
+                  <DefaultButton className='btnSucess' onClick={async () => handleSendMessage} iconProps={{ iconName: 'Send' }} disabled={message.replace(/\s{3,}/g, ' ').length < caracteres}>Enviar</DefaultButton>
                 </div>
               </div>
             </FocusTrapZone>

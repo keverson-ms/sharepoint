@@ -4,6 +4,7 @@ define([], function () {
     "BasicGroupName": "Group Name",
     "TitleSectionFieldLabel": "Título de Seção",
     "MessageDefaultFieldLabel": "Usar um título de seção padrão?",
+    "OrderFieldLabel": "Ordenar itens por ordem?",
     "GroupAzureFieldLabel": "Exibir aniversariantes de qual grupo?",
     "AppLocalEnvironmentSharePoint": "The app is running on your local environment as SharePoint web part",
     "AppLocalEnvironmentTeams": "The app is running on your local environment as Microsoft Teams app",
