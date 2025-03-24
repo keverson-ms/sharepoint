@@ -81,9 +81,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     this._groupOptions = await this.msGraphProvider._fetchGroups(this.context);
 
-    if (this.properties.group) {
-      await this.onPropertyPaneFieldChanged.bind(this);
-    }
+    await this.onPropertyPaneFieldChanged.bind(this);
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -271,8 +269,6 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
 
-    console.log(propertyPath, this.properties.imageModal);
-
     if (this.properties.group) {
       super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
     }
@@ -281,13 +277,15 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
       this.domElement.style.setProperty('--overflow', `${this.properties.overflow ?? 0}px`);
     }
 
-    if (this.properties.group && propertyPath === 'group' && newValue !== oldValue) {
-      this.properties.group = `${newValue}`;
-      this.properties.members = await this.msGraphProvider._fetchGroupMembers(newValue, this.context);
+    if (!this.properties.order || newValue !== oldValue && propertyPath === 'group') {
+      console.log('group');
+      this.properties.members = await this.msGraphProvider._fetchGroupMembers(this.properties.group, this.context);
       this.render();
     }
 
-    if (newValue !== oldValue && propertyPath === 'order') {
+    if (this.properties.order) {
+      console.log('order');
+      this.properties.members = await this.msGraphProvider._fetchGroupMembers(this.properties.group, this.context);
       this.properties.members = this.properties.members.reverse();
       this.render();
     }
