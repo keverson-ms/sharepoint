@@ -78,7 +78,7 @@ export const TeamsMessageModal: React.FunctionComponent<{ member: IBirthdaysMemb
                     <h2>Parabenize <span className={styles.colorTheme}>{member.displayName.split(' - ').shift()}!</span></h2>
                     <p>Escreva uma mensagem para enviar via Teams:</p>
                   </div>
-                  {imageModal.fileAbsoluteUrl && (
+                  {imageModal && (
                     <img src={imageModal.fileAbsoluteUrl} alt={imageModal.fileName} width='100px' className={styles.my1} />
                   )}
                 </div>

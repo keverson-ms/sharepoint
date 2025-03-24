@@ -7,7 +7,7 @@ import {
   PersonaInitialsColor,
   PersonaSize,
 } from 'office-ui-fabric-react/lib/Persona';
-
+import { Icon } from 'office-ui-fabric-react/lib/Icon';
 import { TeamsMessageModal } from './TeamsMessageModal';
 export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps> {
 
@@ -37,19 +37,38 @@ export default class BirthdaysMonth extends React.Component<IBirthdaysMonthProps
                 <div className={`${styles.dflex} ${styles.alignItemsCenter} ${styles.justifyContentSpaceBetween}`}>
                   <Persona
                     key={key}
-                    className={styles.my1}
+                    className={`${styles.my1} ${new Date(`${member.dateBirth}`).getDate() === new Date().getDate() ? `${styles.active}` : ''}`}
                     imageShouldFadeIn={true}
                     size={PersonaSize.size72}
                     text={member.displayName}
                     secondaryText={member.jobTitle}
-                    tertiaryText={member.dayBirthExtension}
                     imageUrl={`${absoluteUrl}/_layouts/15/userphoto.aspx?size=L&accountname=${member.mail}` || TestImages.personaMale}
                     initialsColor={PersonaInitialsColor.gold}
                     styles={{
-                      primaryText: [styles.fontWeightBold, styles.colorTheme, styles.fontSize1rem],
-                      secondaryText: [styles.fontWeight600],
-                      tertiaryText: [styles.fontWeightBold, styles.colorTheme, styles.pulse],
+                      primaryText: [
+                        styles.fontWeightBold,
+                        styles.colorTheme,
+                        styles.fontSize1rem,
+                        new Date(`${member.dateBirth}`).getDate() === new Date().getDate() ? `${styles.active}` : ''
+                      ],
+                      secondaryText: [
+                        styles.fontWeight600,
+                      ],
+                      tertiaryText: [
+                        styles.fontWeightBold,
+                        styles.colorTheme,
+                        styles.pulse,
+                        new Date(`${member.dateBirth}`).getDate() === new Date().getDate() ? `${styles.active}` : ''
+                      ],
                     }}
+                    onRenderTertiaryText={() => (
+                      <div className={styles.dflex}>
+                        {new Date(`${member.dateBirth}`).getDate() === new Date().getDate() && (
+                          <Icon iconName="BirthdayCake" className={`${styles.fontSize1} ${styles.mx1}`} />
+                        )}
+                        {`${member.dayBirthExtension} `}
+                      </div>
+                    )}
                   />
                   <TeamsMessageModal member={member} props={webPartContext} msGraph={msGraph} caracteres={this.props.caracteres} imageModal={this.props.imageModal} />
                 </div>

@@ -38,7 +38,7 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = '';
   private _groupOptions: IBirthdaysMembersGroupsItem[] = [];
-  private defaultOverflow = 500;
+  private defaultOverflow = 300;
   private msGraphProvider: MsGraphProvider = new MsGraphProvider();
   private minCaracteres = 10;
 
@@ -81,9 +81,9 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
     this._groupOptions = await this.msGraphProvider._fetchGroups(this.context);
 
-    // if (this.properties.group) {
-    //   await this.onPropertyPaneFieldChanged.bind(this);
-    // }
+    if (this.properties.group) {
+      await this.onPropertyPaneFieldChanged.bind(this);
+    }
 
     return this._getEnvironmentMessage().then(message => {
       this._environmentMessage = message;
@@ -170,8 +170,8 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                 PropertyPaneToggle('order', {
                   label: strings.OrderFieldLabel,
                   checked: this.properties.title && this.properties.order ? true : false,
-                  onText: 'Crescente',
-                  offText: 'Decrescente',
+                  onText: 'Decrescente',
+                  offText: 'Crescente',
                   onAriaLabel: 'Y',
                   offAriaLabel: 'N',
                 }),
@@ -194,18 +194,18 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
                   hideStockImages: true,
                   defaultSelectedTab: FilePickerTabType.SiteFilesTab,
                   onSave: async (e: IFilePickerResult) => {
-                    if (e.fileName) {
+                    if (e) {
+                      e.fileAbsoluteUrl = `${this.context.pageContext.web.absoluteUrl}/SiteAssets/${e.fileName}`;
                       this.properties.imageModal = e;
                       await this.uploadImageModal(e);
                     }
                   },
-                  onChanged: (e) => {
+                  onChanged: (e: IFilePickerResult) => {
                     this.properties.imageModal = e;
                   },
                   key: "deleteFile",
                   buttonLabel: "Selecione o arquivo",
                   label: "arquivo",
-                  required: true,
                   accepts: ['image/*']
                 }),
                 PropertyPaneSlider('overflow', {
@@ -271,14 +271,10 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
 
   protected async onPropertyPaneFieldChanged(propertyPath: string, oldValue: string, newValue: string): Promise<void> {
 
+    console.log(propertyPath, this.properties.imageModal);
 
     if (this.properties.group) {
       super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
-    }
-
-    if (newValue !== oldValue || (propertyPath === 'order' && this.properties.order)) {
-      this.properties.members = this.properties.members.reverse();
-      this.render();
     }
 
     if (propertyPath === "overflow" && newValue !== oldValue) {
@@ -291,6 +287,10 @@ export default class BirthdaysMonthWebPart extends BaseClientSideWebPart<IBirthd
       this.render();
     }
 
+    if (newValue !== oldValue && propertyPath === 'order') {
+      this.properties.members = this.properties.members.reverse();
+      this.render();
+    }
   }
 
 }

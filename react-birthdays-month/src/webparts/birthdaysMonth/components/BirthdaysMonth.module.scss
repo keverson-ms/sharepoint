@@ -84,6 +84,10 @@
   margin: 0.5rem 0;
 }
 
+.mx1 {
+  margin: 0 0.5rem;
+}
+
 .my2 {
   margin: 1rem 0;
 }
@@ -200,4 +204,8 @@
       margin: 0 auto;
     }
   }
+}
+
+.active {
+  color: "[theme:linkHovered, default: #014446]";
 }
